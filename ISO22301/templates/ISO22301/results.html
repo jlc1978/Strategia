@@ -1,0 +1,31 @@
+{% extends "ISO22301/layout.html" %}
+
+{% block content %}
+<style>
+    div.item_context {
+        background-color: {{ color.0 }};}
+    div.item_leadership {
+      background-color: {{ color.1 }};}
+    div.item_policy {
+        background-color: {{ color.2 }};}
+    div.item_support {
+        background-color: {{ color.3 }};}
+    div.item_operation {
+    background-color: {{ color.4 }};}
+    div.item_management {
+        background-color: {{ color.5 }};}
+    div.item_improvement {
+        background-color: {{ color.6 }};}
+    div.item_Outcome_Name {
+        background-color: {{ color.7 }};}
+</style>
+<form action = '/ISO22301/logout/' method="POST" > 
+{% csrf_token %}
+<h1>Leadership Results</h1>
+<div>
+<h2>This is where commentary would go<h2>
+</div>
+<div>
+    <input type='submit' value=Logout >
+</form>
+{% endblock %}

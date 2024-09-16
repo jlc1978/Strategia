@@ -1,0 +1,59 @@
+{% extends "ISO22301/layout.html" %}
+
+{% block content %}
+
+    <form action = "" method = "POST">
+    {% csrf_token %}
+
+
+        <div>
+          </div>
+          <table class="center">
+          <thead>
+          <tr>
+            <th>{{ columnheader.0}}</th>
+            <th>{{ columnheader.1}}</th>
+            <th>{{ columnheader.2}}</th> 
+            <th>{{ columnheader.3}}</th>
+            <th>{{ columnheader.4}}</th>
+            <th>{{ columnheader.5}}</th>
+            <th>{{ columnheader.6}}</th>
+          </tr>
+          </thead>
+          <tbody>
+            <form action="" method="POST">
+            <tr>{% for a_area in area %}</tr>
+                <td colspan="7">
+                    <div>{{ a_area.area }}</div>
+                    <p></p>
+                    <div>{{ a_area.areatext}}</div>
+                </td>
+                <tr>{% for a_question in a_area.question_set.all %}</tr>
+                          <td class="question">{{ a_question.question }}</td>
+                              {% for n in nchoices %}
+                                  {% if n == 0 %} 
+                                  <td>
+                                  
+                                    <input name= {{a_question.id}} type="radio" value={{ n }}  id={{ n }} required /><lable> Not Sure</lable>
+                              
+                                  </td>
+                                  {% else %}
+                                  <td>
+                                  
+                                  <input name={{a_question.id}} type="radio" value={{ n }}  id={{ n }} required /><lable> {{n}}</lable>
+                                  </td>
+                                  {% endif %}
+                              {% endfor %}
+                          </tr>
+                        {% endfor%}
+            {% endfor %}
+
+                </table>
+    
+    <h4>Enter any comments about your responses to the questions</h4>
+    <textarea name="{{ textname }}">"Enter Comments Here"</textarea >
+    
+    <input type="submit">
+    </form>
+
+{% endblock %}
