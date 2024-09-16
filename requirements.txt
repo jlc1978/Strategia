@@ -14,3 +14,4 @@ packaging==24.1
     # via gunicorn
 sqlparse==0.5.1
     # via django
+whitenoise[brotli]>=6,<7
