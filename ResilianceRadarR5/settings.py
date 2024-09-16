@@ -70,12 +70,7 @@ TEMPLATES = [
             ],
         },
     },
-    {
-        "BACKEND": "django.template.backends.jinja2.Jinja2",
-        "DIRS": [
-            "/home/html/jinja2",
-        ],
-    },
+
 ]
 
 WSGI_APPLICATION = 'ResilianceRadarR5.wsgi.application'
