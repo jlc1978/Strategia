@@ -8,3 +8,4 @@ packaging==24.1
     # via gunicorn
 sqlparse==0.5.1
     # via django
+whitenoise==5.0.1
