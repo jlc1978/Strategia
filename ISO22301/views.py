@@ -164,8 +164,8 @@ def user_login(request):
             if user is not None:
                 login(request, user)   
                 return redirect('introduction')
-            else:
-                return redirect('login')
+            #else:
+                #return redirect('login')
     else:
         form = LoginForm()
     return render(request,'ISO22301/login.html', {'form': form},)
@@ -174,5 +174,4 @@ def user_logout(request):
     if request.method == 'POST':
         if request.user.is_authenticated:
             logout(request)
-        #return redirect('logout/')
-    return render(request,'ISO22301/logout.html',)
+    return render(request,'ISO22301/goodbye.html',)
