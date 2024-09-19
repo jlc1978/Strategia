@@ -16,29 +16,19 @@
           <div class="t1">{{ project }}</div>
           <div class="t2">{{ projecttext }}</div>
         </div>
+
+        {%for x_topics in areatopics%}
         <div class="space"></div>
-        <div class="item_context">{{ areaheader.0 }}</div>
-        <div class="space"></div>
-        <div class="item_leadership">{{ areaheader.1 }}</div>
-        <div class="space"></div>
-        <div class="item_policy" >{{ areaheader.2 }}</div>
-        <div class="space"></div>
-        <div class="item_support">{{ areaheader.3 }}</div>
-        <div class="space"></div>
-        <div class="item_operation">{{ areaheader.4 }}</div>
-        <div class="space"></div>
-        <div class="item_management">{{ areaheader.5 }}</div>
-        <div class="space"></div>
-        <div class="item_improvement">{{ areaheader.6 }}</div>
-        <div class="space"></div>
-        <div class="triangle-right"></div>
-        <div class="spaceblank"></div>
-    
-        
-        <div class="item_Outcome_Name">
-          <div class="t1">{{outcome}}</div>
-          <div class="t3">{{ outcometext }}</div>
-        </div>
+        <div class={{x_topics.context}}>{{ x_topics.areatopic }}</div> 
+      {% endfor %}  
+
+      <div class="space"></div>
+      <div class="triangle-right"></div>
+      <div class="spaceblank"></div>        
+      <div class="item_Outcome_Name">
+        <div class="t1">{{outcome}}</div>
+        <div class="t3">{{ outcometext }}</div>
+      </div>
     </div> 
     <br>  
     {% block content %}

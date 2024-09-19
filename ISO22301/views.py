@@ -86,14 +86,14 @@ def createheader(n): # n is the value to use in lists created here
     areaheader=Area_Header.objects.all() # get names of areas for header
     column_header=Column_Header.objects.all() #headers for table columns
     nchoices = [0,1,2,3,4,5]
-    #areatopics = Area_Topic.objects.all() # get names of areas for header flow diagram
+    areatopics = Area_Topic.objects.all() # get names of areas for header flow diagram
     areas =  Area.objects.all().prefetch_related('question_set') #Get lit of areas
     areaheader = Area.objects.values_list('area', flat=True)
     textname= ["Text"] #Comment firled text
     context_header = {
         "textname": textname,
         "area": areas,
-        #"areatopics": areatopics,
+        "areatopics": areatopics,
         "areaheader": areaheader,
         "browsertab": browsertab,
         "dashboard_title": dashboard_title,

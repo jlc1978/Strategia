@@ -30,6 +30,7 @@ class Area(models.Model):
 
 class Area_Topic(models.Model):
     areatopic = models.CharField(max_length=400)
+    context = models.CharField(max_length=400) #NEW
     area = models.ForeignKey(
         Area, on_delete=models.CASCADE, null = True
     )
