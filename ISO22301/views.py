@@ -56,6 +56,7 @@ def survey(request):
         area_colors = area_and_overall_colors[0] #new
         overall_color = area_and_overall_colors[1] #new
         divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css
+        print(divcontext_colors_zip)
         #area_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
         context_results ={
             "respondent_id": respondent_id,
