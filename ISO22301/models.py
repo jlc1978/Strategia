@@ -30,7 +30,8 @@ class Area(models.Model):
 
 class Area_Topic(models.Model):
     areatopic = models.CharField(max_length=400)
-    context = models.CharField(max_length=400) #NEW
+    context = models.CharField(max_length=400)
+    divcontext = models.CharField(max_length=400)
     area = models.ForeignKey(
         Area, on_delete=models.CASCADE, null = True
     )
@@ -86,6 +87,7 @@ class Answer(models.Model):
     )
     value = models.IntegerField(null = True, blank=False)
     company=models.CharField(max_length=250, null = True)
+    timestamp= models.TimeField(auto_now = True)
     question = models.ForeignKey(
         Question, on_delete=models.CASCADE, null  = True, unique=False
     )
@@ -103,6 +105,7 @@ class Comment(models.Model):
     respondent = models.CharField(max_length=20)
     company = models.CharField(max_length=75, null=True,)
     comments = models.CharField(max_length=1000, default="No comment")
+    timestamp= models.TimeField(auto_now = True)
     area = models.ForeignKey(
         Area, on_delete=models.CASCADE, null = True, blank=True
     )
