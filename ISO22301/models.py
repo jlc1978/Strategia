@@ -98,7 +98,7 @@ class Answer(models.Model):
     
 
     def __str__(self):
-        return f"{self.respondent} answer to {self.question} is {self.value}"
+        return f"{self.timestamp} {self.respondent} answer to {self.question} is {self.value}"
 
 
 class Comment(models.Model):
