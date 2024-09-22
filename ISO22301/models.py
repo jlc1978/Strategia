@@ -37,7 +37,7 @@ class Area_Topic(models.Model):
     )
 
     def __str__(self):
-        return f"{self.areatopic}"
+        return f"{self.context}: {self.areatopic}"
     
 class Area_Header(models.Model):
     areaheader = models.CharField(max_length=400)
