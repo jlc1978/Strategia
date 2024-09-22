@@ -3,10 +3,10 @@
 {% block content %}
 <style>
 
-{% for x_topics in divcontext_colors_zip %}
+    {% for x_topics in divcontext_colors_zip %}
     {{ x_topics.0}} {
         background-color: {{ x_topics.1 }};}
-{% endfor %}
+    {% endfor %}
 
     div.item_Outcome_Name {
         background-color: {{ overallcolor }};}
