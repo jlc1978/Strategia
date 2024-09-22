@@ -1,2 +1,2 @@
-release: python manage.py migrate
+erelease: python manage.py migrate
 web: gunicorn ResilianceRadarR5.wsgi
