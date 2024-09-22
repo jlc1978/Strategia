@@ -1,2 +1,6 @@
-django
+jango
 gunicorn
+asgire
+packaging
+sqlparse
+whitenoise
