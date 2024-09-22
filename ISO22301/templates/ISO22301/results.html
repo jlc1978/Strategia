@@ -2,6 +2,13 @@
 
 {% block content %}
 <style>
+
+{% for x_topics in divcontext_colors_zip %}
+    {{ x_topics.0}} {
+        background-color: {{ x_topics.1 }};}
+{% endfor %}
+
+  {% comment%}
     div.item_context {
         background-color: {{ color.0 }};}
     div.item_leadership {
@@ -18,6 +25,8 @@
         background-color: {{ color.6 }};}
     div.item_Outcome_Name {
         background-color: {{ color.7 }};}
+
+    {% endcomment %}
 </style>
 <form action = '/ISO22301/goodbye/' method="POST" > 
 {% csrf_token %}

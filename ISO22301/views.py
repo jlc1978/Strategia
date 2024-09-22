@@ -4,6 +4,7 @@ from collections import defaultdict, Counter
 from django.contrib.auth import authenticate, login, logout 
 from .forms import  LoginForm, LogoutForm
 from django.contrib import messages
+import datetime
 
 # Create your views here.
 
@@ -50,11 +51,18 @@ def survey(request):
         results= Answer.objects.filter(respondent=respondent_id).values_list('area_id','value').order_by('-id')[:19]
 
         choices = create_context[1] #get lst of choices to pass from creaet_context
-        area_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
+        divcontext = Area_Topic.objects.values_list('divcontext', flat=True) #Get the divcontext values for each item in the results to align color with boxes
+        area_and_overall_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
+        area_colors = area_and_overall_colors[0] #new
+        overall_color = area_and_overall_colors[1] #new
+        divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css
+        #area_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
         context_results ={
             "respondent_id": respondent_id,
             "comment": results_comments,
-            "color": area_colors
+            #"color": area_colors
+            "divcontext_colors_zip": divcontext_colors_zip, #new
+            "overallcolor": overall_color # new
         }
         context = context_results | context
         
@@ -79,17 +87,19 @@ def createheader(n): # n is the value to use in lists created here
     projecttext=list(Project.objects.values_list('project_text', flat=True))
     outcome=list(Project.objects.values_list('outcome', flat=True))
     outcometext=list(Project.objects.values_list('outcome_text', flat=True))
+    # Used to identify specific text for ISO
     project=project[n]
     projecttext=projecttext[n]
     outcome=outcome[n]
     outcometext=outcometext[n]
+    #layout data
     areaheader=Area_Header.objects.all() # get names of areas for header
     column_header=Column_Header.objects.all() #headers for table columns
     nchoices = [0,1,2,3,4,5]
     areatopics = Area_Topic.objects.all() # get names of areas for header flow diagram
-    areas =  Area.objects.all().prefetch_related('question_set') #Get lit of areas
+    areas =  Area.objects.all().prefetch_related('question_set') #Get list of areas
     areaheader = Area.objects.values_list('area', flat=True)
-    textname= ["Text"] #Comment firled text
+    textname= ["Text"] #Comment field text
     context_header = {
         "textname": textname,
         "area": areas,
@@ -107,7 +117,8 @@ def createheader(n): # n is the value to use in lists created here
     return context_header, nchoices
 
 def determine_score(area, values,choices):
-    area_frequency = list(Counter(area).values()) # count frequency of areas convereted to list
+    area_frequency = list(Counter(area).values()) # count frequency of questions in each areas convereted to list to 
+    # be used to determine how often to iterate each area when determining the area's score
     area_total = sum(area_frequency)
     num_areas = len(Counter(area)) #determine number of areas
     aggregate_score = 0 #total score
@@ -129,9 +140,9 @@ def determine_score(area, values,choices):
         start += area_frequency[n]
         area_scores.append(score)
     score_ave_overall = aggregate_score / (area_total * max_score)
-    color = score_color_overall(score_ave_overall)
-    score_result.append(color)
-    return score_result
+    overall_color = score_color_overall(score_ave_overall)
+    #score_result.append(color)
+    return score_result, overall_color
     
 def score_color(score): #Determine what color to shade scored area
     if score >= .8:
