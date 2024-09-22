@@ -45,27 +45,28 @@ def survey(request):
         respondent_id=request.user.id #Get user_id value as integer id
         company = request.user.groups.values_list('name',flat = True)# Get company for user logged in
         Comment.objects.create(comments = results_comments, respondent = respondent_id, company = company) #put comments in db
+       # entry_time = datetime.datetime.now() #set time for data entry
+   
         for i in range(len(keys_values)):#fill in answers to SQL table
 
             Answer.objects.create(question_id = keys_values_int[i],value = answers_values_int[i], area_id = questionareas_area_id[i],respondent=respondent_id, company=company)
-        results= Answer.objects.filter(respondent=respondent_id).values_list('area_id','value').order_by('-id')[:19]
+        #results= Answer.objects.filter(respondent=respondent_id).values_list('area_id','value').order_by('-id')[:19] # get last 19 values for respondent to get current answers
 
-        choices = create_context[1] #get lst of choices to pass from creaet_context
+        choices = create_context[1] #get list of choices to pass from create_context
         divcontext = Area_Topic.objects.values_list('divcontext', flat=True) #Get the divcontext values for each item in the results to align color with boxes
         area_and_overall_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
         area_colors = area_and_overall_colors[0] #new
         overall_color = area_and_overall_colors[1] #new
         divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css
-        print(divcontext_colors_zip)
-        #area_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
         context_results ={
             "respondent_id": respondent_id,
             "comment": results_comments,
-            #"color": area_colors
+            #"color": area_colors,
             "divcontext_colors_zip": divcontext_colors_zip, #new
-            "overallcolor": overall_color # new
+            "overallcolor": overall_color, # new
+
         }
-        context = context_results | context
+        context = context_results | context #combine context variables into one context to pass
         
         return render(request, "ISO22301/results.html",context)
 
@@ -75,7 +76,7 @@ def survey(request):
         return render(request, "ISO22301/survey.html", context)
 
 
-def createheader(n): # n is the value to use in lists created here
+def createheader(n): # n is the value to use in lists created here, refers to teh ISO being generated
 
     #Name of browser tab
     browsertab=list(Dashboard.objects.values_list('company', flat=True))
@@ -83,7 +84,7 @@ def createheader(n): # n is the value to use in lists created here
         #Name of dashboard
     dashboard_title=list(Dashboard.objects.values_list('dashboard', flat=True))
     dashboard_title=dashboard_title[n]
-    # names and text for both ends of LoO
+    # names and text for both ends of LoO to extract value for current project
     project=list(Project.objects.values_list('project', flat=True))
     projecttext=list(Project.objects.values_list('project_text', flat=True))
     outcome=list(Project.objects.values_list('outcome', flat=True))
@@ -97,10 +98,10 @@ def createheader(n): # n is the value to use in lists created here
     areaheader=Area_Header.objects.all() # get names of areas for header
     column_header=Column_Header.objects.all() #headers for table columns
     nchoices = [0,1,2,3,4,5]
-    areatopics = Area_Topic.objects.all() # get names of areas for header flow diagram
-    areas =  Area.objects.all().prefetch_related('question_set') #Get list of areas
+    areatopics = Area_Topic.objects.all() #used in layout to enter topics in flexbox
+    areas =  Area.objects.all().prefetch_related('question_set') #Get list of areas tied to question set
     areaheader = Area.objects.values_list('area', flat=True)
-    textname= ["Text"] #Comment field text
+    textname= ["Text"] #Comment feild text
     context_header = {
         "textname": textname,
         "area": areas,
@@ -120,12 +121,12 @@ def createheader(n): # n is the value to use in lists created here
 def determine_score(area, values,choices):
     area_frequency = list(Counter(area).values()) # count frequency of questions in each areas convereted to list to 
     # be used to determine how often to iterate each area when determining the area's score
-    area_total = sum(area_frequency)
-    num_areas = len(Counter(area)) #determine number of areas
+    area_total = sum(area_frequency) # get total number of questions
+    num_areas = len(Counter(area)) #determine number of areas via couter()
     aggregate_score = 0 #total score
     area_scores = [] #list of the score for each area
     score_result = []
-    max_score = choices.pop()
+    max_score = choices.pop() # remove "Not Sure" zero value from calculation of max score
     start=0 #set start location of loop
     for n in range(num_areas): #loop through all areas to create list of values and compute score
         score = 0
@@ -134,11 +135,11 @@ def determine_score(area, values,choices):
         for x in range(start,ai):
             score+=values[x] #sume questions choices for area
        
-        aggregate_score+=score
+        aggregate_score+=score # increment score by teh question results
         average_score = score / (area_frequency[n] * max_score)
         color = score_color(average_score)
         score_result.append(color)
-        start += area_frequency[n]
+        start += area_frequency[n] # Start at next area - move counter by number of questions in previous area
         area_scores.append(score)
     score_ave_overall = aggregate_score / (area_total * max_score)
     overall_color = score_color_overall(score_ave_overall)
@@ -175,9 +176,10 @@ def user_login(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)   
+                current_time = datetime.datetime.now()
                 return redirect('introduction')
-            #else:
-                #return redirect('login')
+            else:
+                return redirect('login')
     else:
         form = LoginForm()
     return render(request,'ISO22301/login.html', {'form': form},)
@@ -186,4 +188,5 @@ def user_logout(request):
     if request.method == 'POST':
         if request.user.is_authenticated:
             logout(request)
-    return render(request,'ISO22301/goodbye.html',)
+    #return redirect('logout')
+    return render(request,'ISO22301/logout.html',)
