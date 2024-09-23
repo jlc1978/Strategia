@@ -139,23 +139,6 @@ th, td {
     border-radius: 15px;
     box-sizing: border-box;
   }
-
-
-  .item_leadership, .item_context, .item_policy, .item_planning, .item_support, .item_operation, .item_management, .item_improvement {
-    width: 8vw;
-    height: 14vh;
-    padding: 10px;
-    align-content: center;
-    background-color: white;
-    border: 2px solid black;
-    
-    display: inline-block;
-    vertical-align: middle;
-    text-align: center;
-    font-size: 2vh;
-    border-radius: 15px;
-    box-sizing: border-box;
-  }
  
   .triangle-right {
       width: 0;

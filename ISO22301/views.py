@@ -97,7 +97,11 @@ def createheader(n): # n is the value to use in lists created here, refers to te
     #layout data
     areaheader=Area_Header.objects.all() # get names of areas for header
     column_header=Column_Header.objects.all() #headers for table columns
-    nchoices = [0,1,2,3,4,5]
+    num_choices=list(Column_Header.objects.values_list('colcount',flat=True)) #h number of unique valoes0 to n
+    num_choices_total=num_choices.count(1)
+    nchoices = []
+    for n in range(num_choices_total):
+        nchoices.append(n)
     areatopics = Area_Topic.objects.all() #used in layout to enter topics in flexbox
     areas =  Area.objects.all().prefetch_related('question_set') #Get list of areas tied to question set
     areaheader = Area.objects.values_list('area', flat=True)

@@ -122,7 +122,7 @@ class ISO(models.Model):
       
 class Column_Header(models.Model):
     colhead = models.CharField(max_length=30)
-
+    colcount = models.IntegerField(blank = True)
     def __str__(self):
         return f"{self.colhead}"
     
