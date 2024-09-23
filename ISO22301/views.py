@@ -193,4 +193,4 @@ def user_logout(request):
         if request.user.is_authenticated:
             logout(request)
     #return redirect('logout')
-    return render(request,'ISO22301/logout.html',)
+    return render(request,'ISO22301/goodbye.html',)
