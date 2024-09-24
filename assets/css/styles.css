@@ -262,6 +262,6 @@ th, td {
     margin-right: auto;
   }
 
-  .svg:hover {
-    background-color: #6e59e9;
+  svg:hover path {
+    opacity: 1;
   }
