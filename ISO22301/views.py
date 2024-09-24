@@ -24,6 +24,9 @@ def generic(request):
 def results(request):
     return render(request, "ISO22301/results.html",)
 
+def wheel(request):
+    return render(request, "ISO22301/wheel.html",)
+
 """ Add Whitenoise https://learndjango.com/tutorials/django-static-files
 
 """
@@ -181,7 +184,7 @@ def user_login(request):
             if user is not None:
                 login(request, user)   
                 current_time = datetime.datetime.now()
-                return redirect('introduction')
+                return redirect('wheel')
             else:
                 return redirect('login')
     else:
