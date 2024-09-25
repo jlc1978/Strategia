@@ -265,3 +265,7 @@ th, td {
   svg:hover path {
     opacity: 1;
   }
+  svg:hover circle {
+    opacity: 10;
+  }
+

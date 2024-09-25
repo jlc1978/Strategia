@@ -32,7 +32,9 @@
                 <tr>{% for a_question in a_area.question_set.all %}</tr>
                           <td class="question">{{ a_question.question }}</td>
                               {% for n in nchoices %}
-                                  {% if n == 0 %} 
+                               
+                              <!--) is special case as text is not a numeral--> 
+                                {% if n == 0 %} 
                                   <td>
                                   
                                     <input name= {{a_question.id}} type="radio" value={{ n }}  id={{ n }} required /><lable> Not Sure</lable>
