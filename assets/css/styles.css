@@ -262,10 +262,7 @@ th, td {
     margin-right: auto;
   }
 
-  svg:hover path {
-    opacity: 1;
+  #path_cm:hover, #path_rm:hover, #path_is:hover, #path_bc:hover, #path_hr:hover, #path_ict:hover, 
+  #path_sc:hover, #path_fa:hover, #path_env:hover, #path_hs:hover, #path_em:hover  {
+    opacity: .5
   }
-  svg:hover circle {
-    opacity: 10;
-  }
-
