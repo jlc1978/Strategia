@@ -264,5 +264,19 @@ th, td {
 
   #path_cm:hover, #path_rm:hover, #path_is:hover, #path_bc:hover, #path_hr:hover, #path_ict:hover, 
   #path_sc:hover, #path_fa:hover, #path_env:hover, #path_hs:hover, #path_em:hover, #path_center:hover {
-    opacity: .5
+    opacity: .5;
+    stroke: blue;
+    stroke-opacity: 1;
+    stroke-width: 5
+  }
+
+  #path_cm:visited, #path_rm:visited, #path_is:visited, #path_bc:visited, #path_hr:visited, #path_ict:visited, 
+  #path_sc:visited, #path_fa:visited, #path_env:visited, #path_hs:visited, #path_em:visited, #path_center:visited {
+    color: red;
+    opacity: .5;
+  }
+
+  link:visited svg path{
+    color: red;
+    opacity: .5;
   }
