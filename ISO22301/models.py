@@ -24,6 +24,8 @@ class Project(models.Model):
 class Area(models.Model):
     area = models.CharField(max_length=30)
     areatext = models.CharField(max_length=400)
+    context = models.CharField(max_length=400)
+    divcontext = models.CharField(max_length=400)
 
     def __str__(self):
         return f"{self.area} Purpose: {self.areatext}"
@@ -130,3 +132,13 @@ class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
     choice = models.IntegerField(default=0)
+
+class Surveys(models.Model):
+    survey = models.CharField(max_length=200)
+    context = models.CharField(max_length=400) #identify survey css to use to set fill colors for visisted and results
+    divcontext = models.CharField(max_length=400) #set results color
+    opacity = models.IntegerField(blank = True) #Uset opacity for fill color for visited or results
+    taken = models.IntegerField(blank = True) #Identify if survey taken: 0 = not taken, 1 = taken
+    def __str__(self):
+        return f"{self.survey} context is {self.context} and results are {self.divcontext}"
+     

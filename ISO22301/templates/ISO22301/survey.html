@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <form action = "" method = "POST">
+    <form action = "{% url "results" %}" method = "POST">
     {% csrf_token %}
 
 
@@ -37,13 +37,13 @@
                                 {% if n == 0 %} 
                                   <td>
                                   
-                                    <input name= {{a_question.id}} type="radio" value={{ n }}  id={{ n }} required /><lable> Not Sure</lable>
+                                    <input name= {{a_question.id}} type="radio" value={{ n }}  id={{ n }} required="required" /><lable> Not Sure</lable>
                               
                                   </td>
                                   {% else %}
                                   <td>
                                   
-                                  <input name={{a_question.id}} type="radio" value={{ n }}  id={{ n }} required /><lable> {{n}}</lable>
+                                  <input name={{a_question.id}} type="radio" value={{ n }}  id={{ n }} required="required" /><lable> {{n}}</lable>
                                   </td>
                                   {% endif %}
                               {% endfor %}
@@ -52,11 +52,12 @@
             {% endfor %}
 
                 </table>
-    
+    <div>
     <h4>Enter any comments about your responses to the questions</h4>
     <textarea name="{{ textname }}">"Enter Comments Here"</textarea >
     
     <input type="submit">
+    </div>
     </form>
 
 {% endblock %}

@@ -12,13 +12,17 @@
         background-color: {{ overallcolor }};}
 
 </style>
-<form action = '/ISO22301/goodbye/' method="POST" > 
+<!--<form action = '/ISO22301/goodbye/' method="POST" > -->
 {% csrf_token %}
 <h1>Leadership Results</h1>
 <div>
 <h2>This is where commentary would go<h2>
 </div>
 <div>
+    <button onclick="location.href='{% url 'wheel' %}'"><lable>Next Survey</lable></button>
+</div>
+<!--
     <input type='submit' value=Logout >
+-->
 </form>
 {% endblock %}

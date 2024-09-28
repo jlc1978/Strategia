@@ -240,7 +240,7 @@ th, td {
     background-color: #160287;
   }
   button {
-    position: relative;
+    position: absolute;
     left: 50vw;
     transform: translateX(-50%);
     height: 5vh;
@@ -272,11 +272,11 @@ th, td {
 
   #path_cm:visited, #path_rm:visited, #path_is:visited, #path_bc:visited, #path_hr:visited, #path_ict:visited, 
   #path_sc:visited, #path_fa:visited, #path_env:visited, #path_hs:visited, #path_em:visited, #path_center:visited {
-    color: red;
+    fill: red;
     opacity: .5;
   }
 
   link:visited svg path{
-    color: red;
+    fill: red;
     opacity: .5;
   }

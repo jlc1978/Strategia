@@ -7,6 +7,11 @@ from django.contrib import messages
 import datetime
 
 # Create your views here.
+"""def survey(request):
+    create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
+
+    context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
+    return render(request,"ISO22301/survey.html", context)"""
 
 def layout(request):
     create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
@@ -22,7 +27,51 @@ def generic(request):
     return render(request, "ISO22301/generic.html",)
 
 def results(request):
-    return render(request, "ISO22301/results.html",)
+    create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
+    context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
+    if request.method == "POST":                         
+        keys_values=list(request.POST.keys()) #extract keys = questions are keys
+        answers_values=list(request.POST.values())
+        results_comments = answers_values.pop() #  Get comments from list
+
+        keys_values.pop(0)# remove token so not part of list of values
+        keys_values.pop() # remove comments so not part of list of values
+        keys_values_int=[eval(i) for i in keys_values]
+        answers_values.pop(0)# remove token
+        answers_values_int=[eval(i) for i in answers_values] #ietrate to create list
+        questionareas_area_id = Question.objects.values_list('area_id', flat=True) # get area names, Flat retuns just the text list of areas
+        respondent_id=request.user.id #Get user_id value as integer id
+        company = request.user.groups.values_list('name',flat = True)# Get company for user logged in
+        Comment.objects.create(comments = results_comments, respondent = respondent_id, company = company) #put comments in db
+       # entry_time = datetime.datetime.now() #set time for data entry
+   
+        for i in range(len(keys_values)):#fill in answers to SQL table
+
+            Answer.objects.create(question_id = keys_values_int[i],value = answers_values_int[i], area_id = questionareas_area_id[i],respondent=respondent_id, company=company)
+        #results= Answer.objects.filter(respondent=respondent_id).values_list('area_id','value').order_by('-id')[:19] # get last 19 values for respondent to get current answers
+
+        choices = create_context[1] #get list of choices to pass from create_context
+        divcontext = Area_Topic.objects.values_list('divcontext', flat=True) #Get the divcontext values for each item in the results to align color with boxes
+        area_and_overall_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
+        area_colors = area_and_overall_colors[0] #new
+        overall_color = area_and_overall_colors[1] #new
+        divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css
+        context_results ={
+            "respondent_id": respondent_id,
+            "comment": results_comments,
+            #"color": area_colors,
+            "divcontext_colors_zip": divcontext_colors_zip, #new
+            "overallcolor": overall_color, # new
+
+        }
+        context = context_results | context #combine context variables into one context to pass
+        
+        return render(request, "ISO22301/results.html",context)
+
+
+    else:
+
+        return render(request, "ISO22301/survey.html",context)
 
 def wheel(request):
     return render(request, "ISO22301/wheel.html",)
@@ -30,7 +79,7 @@ def wheel(request):
 """ Add Whitenoise https://learndjango.com/tutorials/django-static-files
 
 """
-def survey(request):
+"""def survey(request):
     create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
 
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
@@ -78,7 +127,7 @@ def survey(request):
 
         return render(request, "ISO22301/survey.html", context)
 
-
+"""
 def createheader(n): # n is the value to use in lists created here, refers to teh ISO being generated
 
     #Name of browser tab
