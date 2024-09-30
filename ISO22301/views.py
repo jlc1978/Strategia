@@ -20,7 +20,8 @@ def layout(request):
     return render(request, 'ISO22301/layout.html', context)
 
 
-def introduction(request):
+def introduction(request,id):
+    print(id)
     create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
     return render(request, "ISO22301/introduction.html",context)

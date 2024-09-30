@@ -270,6 +270,12 @@ th, td {
     stroke-width: 5
   }
 
+  #path_cm, #path_rm, #path_is, #path_bc, #path_hr, #path_ict, 
+  #path_sc, #path_fa, #path_env, #path_hs, #path_em, #path_center {
+    fill: "none";
+    opacity: 0;
+  }
+
   #path_cm:visited, #path_rm:visited, #path_is:visited, #path_bc:visited, #path_hr:visited, #path_ict:visited, 
   #path_sc:visited, #path_fa:visited, #path_env:visited, #path_hs:visited, #path_em:visited, #path_center:visited {
     fill: red;
