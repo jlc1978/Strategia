@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Answer, Comment, Question, Area, Topic, Area_Header, Column_Header, Dashboard, Project, Area_Topic
+from .models import Answer, Comment, Question, Area, Topic, Area_Header, Column_Header, Dashboard, Project, Area_Topic,Outcome_Colors
 from collections import defaultdict, Counter
 from django.contrib.auth import authenticate, login, logout 
 from .forms import  LoginForm, LogoutForm
@@ -21,19 +21,34 @@ def layout(request):
 
 
 def introduction(request,id): #id is the chsend survey's svg pth to be used to include outcome color
-    print(id)
+    user_id=request.user.id
+    colors=Outcome_Colors.objects.filter(user=user_id)
+    current_path=id
+    context_path={
+        'current_path': current_path        
+    }
     create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
-    print(context)
-    return render(request, "ISO22301/introduction.html",context)
+    context = context | context_path
+    if not colors:
+        return render(request, "ISO22301/introduction.html",context)
+    else:
+        return render(request, "ISO22301/introduction.html",context)
 
 def generic(request):
     return render(request, "ISO22301/generic.html",)
 
 
-def results(request):
+def results(request,id):
+    user_id=request.user.id
+    colors=Outcome_Colors.objects.filter(user=user_id) #get QuerySet for Outcome colors
+    current_path=id # get path for selected button
+    context_path={
+        'current_path': current_path        
+    }
     create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
+    context = context | context_path
     if request.method == "POST":                         
         keys_values=list(request.POST.keys()) #extract keys = questions are keys
         answers_values=list(request.POST.values())

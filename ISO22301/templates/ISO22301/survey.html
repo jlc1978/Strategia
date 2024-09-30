@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <form action = "{% url "results" %}" method = "POST">
+    <form action = "{% url "results" id=current_path%}" method = "POST">
     {% csrf_token %}
 
 
