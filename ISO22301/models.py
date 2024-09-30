@@ -1,31 +1,27 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
-class Dashboard(models.Model):
-    dashboard = models.CharField(max_length=50)
-    company = models.CharField(max_length=150, default="None")
-   
-
-    def __str__(self):
-        return f"Company: {self.company} Dashboard: {self.dashboard}"
+class Surveys(models.Model):
+    survey = models.CharField(max_length=200)
+    context = models.CharField(max_length=400) #identify survey css to use to set fill colors for visisted and results
+    color = models.CharField(max_length=400) #set results color
+    opacity = models.IntegerField(blank = True) #Uset opacity for fill color for visited or results
+    taken = models.IntegerField(blank = True) #Identify if survey taken: 0 = not taken, 1 = taken
     
-class Project(models.Model):
-    project = models.CharField(max_length=30)
-    project_text = models.CharField(max_length=150)
-    outcome = models.CharField(max_length=30)
-    outcome_text = models.CharField(max_length=150)
-    dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
-
+    
     def __str__(self):
-        return f"{self.project} purpose {self.project_text}, {self.outcome} desired is {self.outcome_text}"
-
+        return f"{self.survey} context is {self.context}"
 
 class Area(models.Model):
     area = models.CharField(max_length=30)
     areatext = models.CharField(max_length=400)
     context = models.CharField(max_length=400)
     divcontext = models.CharField(max_length=400)
+    survey = models.ForeignKey(
+        Surveys, on_delete=models.CASCADE, null = True)
+
 
     def __str__(self):
         return f"{self.area} Purpose: {self.areatext}"
@@ -50,15 +46,39 @@ class Area_Header(models.Model):
     def __str__(self):
         return f"{self.areaheader}"
 
-class Respondent(models.Model):
-    first_name = models.CharField(max_length=30, null=True,)
-    last_name = models.CharField(max_length=30, null=True,)
+
+
+class Comment(models.Model):
     company = models.CharField(max_length=75, null=True,)
-    email = models.EmailField(max_length=256, null=False,)
-    password = models.CharField(max_length=30)
+    comments = models.CharField(max_length=1000, default="No comment")
+    timestamp = models.TimeField(auto_now = True)
+    area = models.ForeignKey(
+        Area, on_delete=models.CASCADE, null = True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.CharField(max_length=75, null=True,)
+    
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} Company: {self.company} Email: {self.email} "
+        return f"{self.user_id} {self.username} comments are {self.comments}"
+class Dashboard(models.Model):
+    dashboard = models.CharField(max_length=50)
+    company = models.CharField(max_length=150, default="None")
+   
+
+    def __str__(self):
+        return f"Company: {self.company} Dashboard: {self.dashboard}"
+    
+class Project(models.Model):
+    project = models.CharField(max_length=30)
+    project_text = models.CharField(max_length=150)
+    outcome = models.CharField(max_length=30)
+    outcome_text = models.CharField(max_length=150)
+    dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.project} purpose {self.project_text}, {self.outcome} desired is {self.outcome_text}"
+
+
 
 class Topic(models.Model):
     topic = models.CharField(max_length=30)
@@ -93,27 +113,11 @@ class Answer(models.Model):
     question = models.ForeignKey(
         Question, on_delete=models.CASCADE, null  = True, unique=False
     )
-
-    respondent = models.IntegerField(null = True, blank=False)
-    
-    
-    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.CharField(max_length=75, null=True,)
 
     def __str__(self):
-        return f"{self.timestamp} {self.respondent} answer to {self.question} is {self.value}"
-
-
-class Comment(models.Model):
-    respondent = models.CharField(max_length=20)
-    company = models.CharField(max_length=75, null=True,)
-    comments = models.CharField(max_length=1000, default="No comment")
-    timestamp= models.TimeField(auto_now = True)
-    area = models.ForeignKey(
-        Area, on_delete=models.CASCADE, null = True, blank=True
-    )
-
-    def __str__(self):
-        return f"{self.respondent} comments are {self.comments}"
+        return f"{self.user_id}  {self.username} answer to {self.question} is {self.value} at {self.timestamp}"
 
 class ISO(models.Model):
     name=models.CharField(max_length=100)
@@ -133,12 +137,5 @@ class Choice(models.Model):
     choice_text = models.CharField(max_length=200)
     choice = models.IntegerField(default=0)
 
-class Surveys(models.Model):
-    survey = models.CharField(max_length=200)
-    context = models.CharField(max_length=400) #identify survey css to use to set fill colors for visisted and results
-    divcontext = models.CharField(max_length=400) #set results color
-    opacity = models.IntegerField(blank = True) #Uset opacity for fill color for visited or results
-    taken = models.IntegerField(blank = True) #Identify if survey taken: 0 = not taken, 1 = taken
-    def __str__(self):
-        return f"{self.survey} context is {self.context} and results are {self.divcontext}"
+
      

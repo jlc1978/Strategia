@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
-from .models import Answer, Comment, Question, Area, Topic, Area_Header, Column_Header, Dashboard, Project, Area_Topic, Respondent
+from .models import Answer, Comment, Question, Area, Topic, Area_Header, Column_Header, Dashboard, Project, Area_Topic
 from collections import defaultdict, Counter
 from django.contrib.auth import authenticate, login, logout 
 from .forms import  LoginForm, LogoutForm
 from django.contrib import messages
 import datetime
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 """def survey(request):
@@ -18,6 +19,7 @@ def layout(request):
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
     return render(request, 'ISO22301/layout.html', context)
 
+
 def introduction(request):
     create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
@@ -25,6 +27,7 @@ def introduction(request):
 
 def generic(request):
     return render(request, "ISO22301/generic.html",)
+
 
 def results(request):
     create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
@@ -40,18 +43,18 @@ def results(request):
         answers_values.pop(0)# remove token
         answers_values_int=[eval(i) for i in answers_values] #ietrate to create list
         questionareas_area_id = Question.objects.values_list('area_id', flat=True) # get area names, Flat retuns just the text list of areas
-        respondent_id=request.user.id #Get user_id value as integer id
+        respondent_id=request.user #Get user_id value as integer id NEW
         company = request.user.groups.values_list('name',flat = True)# Get company for user logged in
-        Comment.objects.create(comments = results_comments, respondent = respondent_id, company = company) #put comments in db
+        Comment.objects.create(comments = results_comments, user_id = 1, company = company, username=respondent_id)
        # entry_time = datetime.datetime.now() #set time for data entry
    
         for i in range(len(keys_values)):#fill in answers to SQL table
 
-            Answer.objects.create(question_id = keys_values_int[i],value = answers_values_int[i], area_id = questionareas_area_id[i],respondent=respondent_id, company=company)
+            Answer.objects.create(question_id = keys_values_int[i],value = answers_values_int[i], area_id = questionareas_area_id[i],user = respondent_id, company=company, username=respondent_id)
         #results= Answer.objects.filter(respondent=respondent_id).values_list('area_id','value').order_by('-id')[:19] # get last 19 values for respondent to get current answers
 
         choices = create_context[1] #get list of choices to pass from create_context
-        divcontext = Area_Topic.objects.values_list('divcontext', flat=True) #Get the divcontext values for each item in the results to align color with boxes
+        divcontext = Area.objects.values_list('divcontext', flat=True) #Get the divcontext values for each item in the results to align color with boxes
         area_and_overall_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
         area_colors = area_and_overall_colors[0] #new
         overall_color = area_and_overall_colors[1] #new
@@ -73,61 +76,11 @@ def results(request):
 
         return render(request, "ISO22301/survey.html",context)
 
+
 def wheel(request):
     return render(request, "ISO22301/wheel.html",)
 
-""" Add Whitenoise https://learndjango.com/tutorials/django-static-files
 
-"""
-"""def survey(request):
-    create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
-
-    context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
-    if request.method == "POST":
-        keys_values=list(request.POST.keys()) #extract keys = questions are keys
-        answers_values=list(request.POST.values())
-        results_comments = answers_values.pop() #  Get comments from list
-
-        keys_values.pop(0)# remove token so not part of list of values
-        keys_values.pop() # remove comments so not part of list of values
-        keys_values_int=[eval(i) for i in keys_values]
-        answers_values.pop(0)# remove token
-        answers_values_int=[eval(i) for i in answers_values] #ietrate to create list
-        questionareas_area_id = Question.objects.values_list('area_id', flat=True) # get area names, Flat retuns just the text list of areas
-        respondent_id=request.user.id #Get user_id value as integer id
-        company = request.user.groups.values_list('name',flat = True)# Get company for user logged in
-        Comment.objects.create(comments = results_comments, respondent = respondent_id, company = company) #put comments in db
-       # entry_time = datetime.datetime.now() #set time for data entry
-   
-        for i in range(len(keys_values)):#fill in answers to SQL table
-
-            Answer.objects.create(question_id = keys_values_int[i],value = answers_values_int[i], area_id = questionareas_area_id[i],respondent=respondent_id, company=company)
-        #results= Answer.objects.filter(respondent=respondent_id).values_list('area_id','value').order_by('-id')[:19] # get last 19 values for respondent to get current answers
-
-        choices = create_context[1] #get list of choices to pass from create_context
-        divcontext = Area_Topic.objects.values_list('divcontext', flat=True) #Get the divcontext values for each item in the results to align color with boxes
-        area_and_overall_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
-        area_colors = area_and_overall_colors[0] #new
-        overall_color = area_and_overall_colors[1] #new
-        divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css
-        context_results ={
-            "respondent_id": respondent_id,
-            "comment": results_comments,
-            #"color": area_colors,
-            "divcontext_colors_zip": divcontext_colors_zip, #new
-            "overallcolor": overall_color, # new
-
-        }
-        context = context_results | context #combine context variables into one context to pass
-        
-        return render(request, "ISO22301/results.html",context)
-
-
-    else:
-
-        return render(request, "ISO22301/survey.html", context)
-
-"""
 def createheader(n): # n is the value to use in lists created here, refers to teh ISO being generated
 
     #Name of browser tab
@@ -154,7 +107,7 @@ def createheader(n): # n is the value to use in lists created here, refers to te
     nchoices = []
     for n in range(num_choices_total):
         nchoices.append(n)
-    areatopics = Area_Topic.objects.all() #used in layout to enter topics in flexbox
+    areatopics = Area.objects.all() #used in layout to enter topics in flexbox
     areas =  Area.objects.all().prefetch_related('question_set') #Get list of areas tied to question set
     areaheader = Area.objects.values_list('area', flat=True)
     textname= ["Text"] #Comment feild text
@@ -173,6 +126,7 @@ def createheader(n): # n is the value to use in lists created here, refers to te
         "columnheader": column_header,
         }
     return context_header, nchoices
+
 
 def determine_score(area, values,choices):
     area_frequency = list(Counter(area).values()) # count frequency of questions in each areas convereted to list to 
@@ -239,6 +193,7 @@ def user_login(request):
     else:
         form = LoginForm()
     return render(request,'ISO22301/login.html', {'form': form},)
+
 
 def user_logout(request):
     if request.method == 'POST':
