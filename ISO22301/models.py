@@ -59,7 +59,7 @@ class Comment(models.Model):
     
 
     def __str__(self):
-        return f"{self.user_id} {self.username} comments are {self.comments}"
+        return f"{self.user} {self.username} comments are {self.comments}"
 class Dashboard(models.Model):
     dashboard = models.CharField(max_length=50)
     company = models.CharField(max_length=150, default="None")
@@ -117,7 +117,7 @@ class Answer(models.Model):
     username = models.CharField(max_length=75, null=True,)
 
     def __str__(self):
-        return f"{self.user_id}  {self.username} answer to {self.question} is {self.value} at {self.timestamp}"
+        return f"{self.user}  {self.username} answer to {self.question} is {self.value} at {self.timestamp}"
 
 class ISO(models.Model):
     name=models.CharField(max_length=100)
@@ -136,6 +136,17 @@ class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
     choice = models.IntegerField(default=0)
+
+class Outcome_Colors(models.Model):
+    color=models.CharField(max_length=10)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.CharField(max_length=75, null=True,)
+    company=models.CharField(max_length=250, null = True)
+    timestamp= models.TimeField(auto_now = True)
+    path=models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.user}  {self.username} path {self.path} is {self.color} at {self.timestamp}"
 
 
      
