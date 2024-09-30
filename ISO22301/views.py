@@ -43,14 +43,15 @@ def results(request):
         answers_values.pop(0)# remove token
         answers_values_int=[eval(i) for i in answers_values] #ietrate to create list
         questionareas_area_id = Question.objects.values_list('area_id', flat=True) # get area names, Flat retuns just the text list of areas
-        respondent_id=request.user #Get user_id value as integer id NEW
+        user_name=request.user #Get username value as integer id NEW
+        user_id=request.user.id
         company = request.user.groups.values_list('name',flat = True)# Get company for user logged in
-        Comment.objects.create(comments = results_comments, user_id = 1, company = company, username=respondent_id)
+        Comment.objects.create(comments = results_comments, user_id = user_id, company = company, username=user_name)
        # entry_time = datetime.datetime.now() #set time for data entry
    
         for i in range(len(keys_values)):#fill in answers to SQL table
 
-            Answer.objects.create(question_id = keys_values_int[i],value = answers_values_int[i], area_id = questionareas_area_id[i],user = respondent_id, company=company, username=respondent_id)
+            Answer.objects.create(question_id = keys_values_int[i],value = answers_values_int[i], area_id = questionareas_area_id[i], user_id=user_id, company=company, username=user_name)
         #results= Answer.objects.filter(respondent=respondent_id).values_list('area_id','value').order_by('-id')[:19] # get last 19 values for respondent to get current answers
 
         choices = create_context[1] #get list of choices to pass from create_context
@@ -60,7 +61,7 @@ def results(request):
         overall_color = area_and_overall_colors[1] #new
         divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css
         context_results ={
-            "respondent_id": respondent_id,
+            "respondent_id": user_name,
             "comment": results_comments,
             #"color": area_colors,
             "divcontext_colors_zip": divcontext_colors_zip, #new
