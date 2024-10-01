@@ -41,7 +41,8 @@ def results(request,id):
     context_path={
         'current_path': id # get path for selected button and pass it via context     
     }
-    colors=Outcome_Colors.objects.filter(user=user_id) #get QuerySet for Outcome colors
+    colors=Outcome_Colors.objects.filter(user=user_id, path=id) #get QuerySet for Outcome colors
+    print(colors)
     if not colors:
        Outcome_Colors.objects.create(path=id, color='None', company=company, user_id=user_id, username=user_name)
     else:
@@ -76,7 +77,6 @@ def results(request,id):
         area_colors = area_and_overall_colors[0] #new
         overall_color = area_and_overall_colors[1] #new
         divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css
-        print(divcontext_colors_zip)
         context_results ={
             "respondent_id": user_name,
             "comment": results_comments,
