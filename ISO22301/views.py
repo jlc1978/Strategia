@@ -21,8 +21,6 @@ def layout(request):
 
 
 def introduction(request,id): #id is the chsend survey's svg pth to be used to include outcome color
-    user_id=request.user.id
-    colors=Outcome_Colors.objects.filter(user=user_id)
     current_path=id
     context_path={
         'current_path': current_path        
@@ -30,10 +28,7 @@ def introduction(request,id): #id is the chsend survey's svg pth to be used to i
     create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
     context = context | context_path
-    if not colors:
-        return render(request, "ISO22301/introduction.html",context)
-    else:
-        return render(request, "ISO22301/introduction.html",context)
+    return render(request, "ISO22301/introduction.html",context)
 
 def generic(request):
     return render(request, "ISO22301/generic.html",)
@@ -41,11 +36,16 @@ def generic(request):
 
 def results(request,id):
     user_id=request.user.id
-    colors=Outcome_Colors.objects.filter(user=user_id) #get QuerySet for Outcome colors
-    current_path=id # get path for selected button
+    company = request.user.groups.values_list('name',flat = True)# Get company for user logged in
+    user_name=request.user #Get username value as integer id NEW
     context_path={
-        'current_path': current_path        
+        'current_path': id # get path for selected button and pass it via context     
     }
+    colors=Outcome_Colors.objects.filter(user=user_id) #get QuerySet for Outcome colors
+    if not colors:
+       Outcome_Colors.objects.create(path=id, color='None', company=company, user_id=user_id, username=user_name)
+    else:
+        pass
     create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
     context = context | context_path
@@ -60,9 +60,8 @@ def results(request,id):
         answers_values.pop(0)# remove token
         answers_values_int=[eval(i) for i in answers_values] #ietrate to create list
         questionareas_area_id = Question.objects.values_list('area_id', flat=True) # get area names, Flat retuns just the text list of areas
-        user_name=request.user #Get username value as integer id NEW
-        user_id=request.user.id
-        company = request.user.groups.values_list('name',flat = True)# Get company for user logged in
+        
+        #user_id=request.user.id
         Comment.objects.create(comments = results_comments, user_id = user_id, company = company, username=user_name)
        # entry_time = datetime.datetime.now() #set time for data entry
    
@@ -77,6 +76,7 @@ def results(request,id):
         area_colors = area_and_overall_colors[0] #new
         overall_color = area_and_overall_colors[1] #new
         divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css
+        print(divcontext_colors_zip)
         context_results ={
             "respondent_id": user_name,
             "comment": results_comments,
@@ -96,7 +96,12 @@ def results(request,id):
 
 
 def wheel(request):
-    return render(request, "ISO22301/wheel.html",)
+    outcomecolors=list(Outcome_Colors.objects.values_list('path','color'))
+    context = {
+       'wheelcolors': outcomecolors
+    }
+    print(outcomecolors)
+    return render(request, "ISO22301/wheel.html",context)
 
 
 def createheader(n): # n is the value to use in lists created here, refers to teh ISO being generated
