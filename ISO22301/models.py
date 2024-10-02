@@ -7,7 +7,7 @@ class Surveys(models.Model):
     survey = models.CharField(max_length=200)
     context = models.CharField(max_length=400) #identify survey css to use to set fill colors for visisted and results
     color = models.CharField(max_length=400) #set results color
-    opacity = models.IntegerField(blank = True) #Uset opacity for fill color for visited or results
+    opacity = models.DecimalField(max_digits=2, decimal_places=1, blank = True) #Uset opacity for fill color for visited or results
     taken = models.IntegerField(blank = True) #Identify if survey taken: 0 = not taken, 1 = taken
     
     
@@ -144,6 +144,7 @@ class Outcome_Colors(models.Model):
     company=models.CharField(max_length=250, null = True)
     timestamp= models.TimeField(auto_now = True)
     path=models.CharField(max_length=20)
+    opacity = models.DecimalField(max_digits=2, decimal_places=1, null = True) #Uset opacity for fill color for visited or results
 
     def __str__(self):
         return f"{self.user}  {self.username} path {self.path} is {self.color} at {self.timestamp}"

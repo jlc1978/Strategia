@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Answer, Comment, Question, Area, Topic, Area_Header, Column_Header, Dashboard, Project, Area_Topic,Outcome_Colors
+from .models import Answer, Comment, Question, Area, Topic, Area_Header, Column_Header, Dashboard, Project, Area_Topic,Outcome_Colors, Surveys
 from collections import defaultdict, Counter
 from django.contrib.auth import authenticate, login, logout 
 from .forms import  LoginForm, LogoutForm
@@ -42,9 +42,8 @@ def results(request,id):
         'current_path': id # get path for selected button and pass it via context     
     }
     colors=Outcome_Colors.objects.filter(user=user_id, path=id) #get QuerySet for Outcome colors
-    print(colors)
     if not colors:
-       Outcome_Colors.objects.create(path=id, color='None', company=company, user_id=user_id, username=user_name)
+       Outcome_Colors.objects.create(path=id, color='None', company=company, user_id=user_id, username=user_name, opacity= 0.0)
     else:
         pass
     create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
@@ -76,7 +75,10 @@ def results(request,id):
         area_and_overall_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
         area_colors = area_and_overall_colors[0] #new
         overall_color = area_and_overall_colors[1] #new
-        divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css
+        opacity=.5
+        #oc=Surveys.objects.filter(context=id).update(color=overall_color, opacity=opacity)
+        oc_user=Outcome_Colors.objects.filter(user=user_id).filter(path=id).update(color=overall_color, opacity=opacity)
+        divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css 
         context_results ={
             "respondent_id": user_name,
             "comment": results_comments,
@@ -96,11 +98,14 @@ def results(request,id):
 
 
 def wheel(request):
-    outcomecolors=list(Outcome_Colors.objects.values_list('path','color'))
+    #outcomecolors=list(Outcome_Colors.objects.values_list('path','color'))
+    oc=Outcome_Colors.objects.values_list('color', flat=True) #Get the colors for the wheel
+    path=Outcome_Colors.objects.values_list('path', flat=True) #get the paths to color
+    opacity=Outcome_Colors.objects.values_list('opacity', flat=True) #get the paths to color
+    outcomecolors = list(zip(path,oc,opacity))
     context = {
        'wheelcolors': outcomecolors
     }
-    print(outcomecolors)
     return render(request, "ISO22301/wheel.html",context)
 
 
