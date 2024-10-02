@@ -15,7 +15,7 @@ class Surveys(models.Model):
         return f"{self.survey} context is {self.context}"
 
 class Area(models.Model):
-    area = models.CharField(max_length=30)
+    area = models.CharField(max_length=300)
     areatext = models.CharField(max_length=400)
     context = models.CharField(max_length=400)
     divcontext = models.CharField(max_length=400)

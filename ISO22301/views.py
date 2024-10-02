@@ -25,7 +25,7 @@ def introduction(request,id): #id is the chsend survey's svg pth to be used to i
     context_path={
         'current_path': current_path        
     }
-    create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
+    create_context=createheader(0,id) #pass starting values to use to extract desired text, get tuple
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
     context = context | context_path
     return render(request, "ISO22301/introduction.html",context)
@@ -46,7 +46,7 @@ def results(request,id):
        Outcome_Colors.objects.create(path=id, color='None', company=company, user_id=user_id, username=user_name, opacity= 0.0)
     else:
         pass
-    create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
+    create_context=createheader(0,id) #pass starting values to use to extract desired text, get tuple
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
     context = context | context_path
     if request.method == "POST":                         
@@ -109,8 +109,10 @@ def wheel(request):
     return render(request, "ISO22301/wheel.html",context)
 
 
-def createheader(n): # n is the value to use in lists created here, refers to teh ISO being generated
-
+def createheader(n,id): # n is the value to use in lists created here, refers to teh ISO being generated Id is survey
+    survey_id=Surveys.objects.filter(context=id).values_list("id", flat=True) #Get survey id for path
+    survey_id_int=survey_id.first() # extract integer value
+    print(survey_id_int)
     #Name of browser tab
     browsertab=list(Dashboard.objects.values_list('company', flat=True))
     browsertab=browsertab[n]
@@ -128,15 +130,16 @@ def createheader(n): # n is the value to use in lists created here, refers to te
     outcome=outcome[n]
     outcometext=outcometext[n]
     #layout data
-    areaheader=Area_Header.objects.all() # get names of areas for header
+    #areaheader=Area_Header.objects.all() # get names of areas for header
     column_header=Column_Header.objects.all() #headers for table columns
     num_choices=list(Column_Header.objects.values_list('colcount',flat=True)) #h number of unique valoes0 to n
     num_choices_total=num_choices.count(1)
     nchoices = []
     for n in range(num_choices_total):
         nchoices.append(n)
-    areatopics = Area.objects.all() #used in layout to enter topics in flexbox
-    areas =  Area.objects.all().prefetch_related('question_set') #Get list of areas tied to question set
+    areatopics = Area.objects.filter(survey=survey_id_int).all() #used in layout to enter topics in flexbox
+    areas =  Area.objects.filter(survey=survey_id_int).all().prefetch_related('question_set') #Get list of areas tied to question set
+    #areatopics = Surveys.objects.filter(context=id)
     areaheader = Area.objects.values_list('area', flat=True)
     textname= ["Text"] #Comment feild text
     context_header = {
