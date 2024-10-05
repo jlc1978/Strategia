@@ -41,28 +41,29 @@ def results(request,id):
     context_path={
         'current_path': id # get path for selected button and pass it via context     
     }
-    colors=Outcome_Colors.objects.filter(user=user_id, path=id) #get QuerySet for Outcome colors
-    if not colors:
-       Outcome_Colors.objects.create(path=id, color='None', company=company, user_id=user_id, username=user_name, opacity= 0.0)
-    else:
-        pass
     create_context=createheader(0,id) #pass starting values to use to extract desired text, get tuple
+    survey = create_context[2]
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
     context = context | context_path
+# Identify whether the survey has been taken by seeing if a color has been provided
+    colors=Outcome_Colors.objects.filter(user=user_id, path=id) #get QuerySet for Outcome colors
+    if not colors:
+        Outcome_Colors.objects.create(path=id, color='Blue', company=company, user_id=user_id, username=user_name, opacity= 0.0) #Default new entry for survey
+    else:
+        pass
+
     if request.method == "POST":                         
         keys_values=list(request.POST.keys()) #extract keys = questions are keys
         answers_values=list(request.POST.values())
         results_comments = answers_values.pop() #  Get comments from list
-
         keys_values.pop(0)# remove token so not part of list of values
         keys_values.pop() # remove comments so not part of list of values
         keys_values_int=[eval(i) for i in keys_values]
         answers_values.pop(0)# remove token
         answers_values_int=[eval(i) for i in answers_values] #ietrate to create list
         questionareas_area_id = Question.objects.values_list('area_id', flat=True) # get area names, Flat retuns just the text list of areas
-        
         #user_id=request.user.id
-        Comment.objects.create(comments = results_comments, user_id = user_id, company = company, username=user_name)
+        Comment.objects.create(comments = results_comments, user_id = user_id, company = company, username=user_name, survey_id=survey)
        # entry_time = datetime.datetime.now() #set time for data entry
    
         for i in range(len(keys_values)):#fill in answers to SQL table
@@ -75,7 +76,7 @@ def results(request,id):
         area_and_overall_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
         area_colors = area_and_overall_colors[0] #new
         overall_color = area_and_overall_colors[1] #new
-        opacity=.5
+        opacity= 1 # Set opacity to show outcome color on wheel
         #oc=Surveys.objects.filter(context=id).update(color=overall_color, opacity=opacity)
         oc_user=Outcome_Colors.objects.filter(user=user_id).filter(path=id).update(color=overall_color, opacity=opacity)
         divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css 
@@ -98,10 +99,13 @@ def results(request,id):
 
 
 def wheel(request):
+    user_id=request.user.id
+    print(user_id)
+    #Need to filter by user id
     #outcomecolors=list(Outcome_Colors.objects.values_list('path','color'))
-    oc=Outcome_Colors.objects.values_list('color', flat=True) #Get the colors for the wheel
-    path=Outcome_Colors.objects.values_list('path', flat=True) #get the paths to color
-    opacity=Outcome_Colors.objects.values_list('opacity', flat=True) #get the paths to color
+    oc=Outcome_Colors.objects.filter(user=user_id).values_list('color', flat=True) #Get the colors for the wheel
+    path=Outcome_Colors.objects.filter(user=user_id).values_list('path', flat=True) #get the paths to color
+    opacity=Outcome_Colors.objects.filter(user=user_id).values_list('opacity', flat=True) #get the paths to color
     outcomecolors = list(zip(path,oc,opacity))
     context = {
        'wheelcolors': outcomecolors
@@ -112,7 +116,6 @@ def wheel(request):
 def createheader(n,id): # n is the value to use in lists created here, refers to teh ISO being generated Id is survey
     survey_id=Surveys.objects.filter(context=id).values_list("id", flat=True) #Get survey id for path
     survey_id_int=survey_id.first() # extract integer value
-    print(survey_id_int)
     #Name of browser tab
     browsertab=list(Dashboard.objects.values_list('company', flat=True))
     browsertab=browsertab[n]
@@ -137,16 +140,16 @@ def createheader(n,id): # n is the value to use in lists created here, refers to
     nchoices = []
     for n in range(num_choices_total):
         nchoices.append(n)
-    areatopics = Area.objects.filter(survey=survey_id_int).all() #used in layout to enter topics in flexbox
+    surveytopics = Area.objects.filter(survey=survey_id_int).all() #used in layout to enter topics in flexbox
     areas =  Area.objects.filter(survey=survey_id_int).all().prefetch_related('question_set') #Get list of areas tied to question set
     #areatopics = Surveys.objects.filter(context=id)
-    areaheader = Area.objects.values_list('area', flat=True)
+    #areaheader = Area.objects.values_list('area', flat=True)
     textname= ["Text"] #Comment feild text
     context_header = {
         "textname": textname,
         "area": areas,
-        "areatopics": areatopics,
-        "areaheader": areaheader,
+        "surveytopics": surveytopics,
+        #"areaheader": areaheader,
         "browsertab": browsertab,
         "dashboard_title": dashboard_title,
         "project": project,
@@ -156,7 +159,7 @@ def createheader(n,id): # n is the value to use in lists created here, refers to
         "nchoices": nchoices,
         "columnheader": column_header,
         }
-    return context_header, nchoices
+    return context_header, nchoices, survey_id_int
 
 
 def determine_score(area, values,choices):

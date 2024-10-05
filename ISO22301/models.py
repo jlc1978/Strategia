@@ -56,6 +56,9 @@ class Comment(models.Model):
         Area, on_delete=models.CASCADE, null = True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     username = models.CharField(max_length=75, null=True,)
+    survey = models.ForeignKey(
+        Surveys, on_delete=models.CASCADE, null = True)
+
     
 
     def __str__(self):
@@ -74,6 +77,8 @@ class Project(models.Model):
     outcome = models.CharField(max_length=30)
     outcome_text = models.CharField(max_length=150)
     dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
+    survey = models.ForeignKey(
+        Surveys, on_delete=models.CASCADE, null = True)
 
     def __str__(self):
         return f"{self.project} purpose {self.project_text}, {self.outcome} desired is {self.outcome_text}"
@@ -145,6 +150,8 @@ class Outcome_Colors(models.Model):
     timestamp= models.TimeField(auto_now = True)
     path=models.CharField(max_length=20)
     opacity = models.DecimalField(max_digits=2, decimal_places=1, null = True) #Uset opacity for fill color for visited or results
+    survey = models.ForeignKey(
+        Surveys, on_delete=models.CASCADE, null = True)
 
     def __str__(self):
         return f"{self.user}  {self.username} path {self.path} is {self.color} at {self.timestamp}"

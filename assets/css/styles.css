@@ -265,7 +265,9 @@ th, td {
   #path_cm:hover, #path_rm:hover, #path_is:hover, #path_bc:hover, #path_hr:hover, #path_ict:hover, 
   #path_sc:hover, #path_fa:hover, #path_env:hover, #path_hs:hover, #path_em:hover, #path_center:hover {
     opacity: .5;
-    stroke: blue;
+    fill: darkgrey;
+    opacity:1;
+    stroke: black;
     stroke-opacity: 1;
     stroke-width: 5
   }
