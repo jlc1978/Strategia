@@ -142,6 +142,7 @@ def createheader(n,id): # n is the value to use in lists created here, refers to
         nchoices.append(n)
     surveytopics = Area.objects.filter(survey=survey_id_int).all() #used in layout to enter topics in flexbox
     areas =  Area.objects.filter(survey=survey_id_int).all().prefetch_related('question_set') #Get list of areas tied to question set
+    print(areas)
     #areatopics = Surveys.objects.filter(context=id)
     #areaheader = Area.objects.values_list('area', flat=True)
     textname= ["Text"] #Comment feild text
