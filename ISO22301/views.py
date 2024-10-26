@@ -106,7 +106,7 @@ def wheel(request):
     oc=Outcome_Colors.objects.filter(user=user_id).values_list('color', flat=True) #Get the colors for the wheel
     path=Outcome_Colors.objects.filter(user=user_id).values_list('path', flat=True) #get the paths to color
     opacity=Outcome_Colors.objects.filter(user=user_id).values_list('opacity', flat=True) #get the paths to color
-    outcomecolors = list(zip(path,oc,opacity))
+    outcomecolors = list(zip(path,oc,opacity)) # create list of colors for each item
     context = {
        'wheelcolors': outcomecolors
     }
