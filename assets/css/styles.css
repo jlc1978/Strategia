@@ -1,3 +1,8 @@
+
+.center {
+  margin-left: auto; 
+  margin-right: auto;
+}
 th, td {
     border:1px solid black;
     padding-left: .5vw;
@@ -61,8 +66,10 @@ th, td {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    width: 100wh;
     margin-bottom: 1vh;
+    margin-left: auto; 
+    margin-right: auto;
   }
   
   .containervert {

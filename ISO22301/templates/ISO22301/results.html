@@ -1,28 +1,92 @@
-{% extends "ISO22301/layout.html" %}
+{% load static %}
 
-{% block content %}
-<style>
-
-    {% for x_topics in divcontext_colors_zip %}
-    {{ x_topics.0}} {
-        background-color: {{ x_topics.1 }};}
-    {% endfor %}
-
-    div.item_Outcome_Name {
-        background-color: {{ overallcolor }};}
-
-</style>
-<!--<form action = '/ISO22301/goodbye/' method="POST" > -->
+<!DOCTYPE html>
+<html lang = "en">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="{% static 'js/echarts.js' %}"></script>
+    <title>{{ browsertab }}</title>
+</head>
+<body>
+    <h1>{{ dashboard_title }}</h1>
 {% csrf_token %}
-<h1>Leadership Results</h1>
-<div>
-<h2>This is where commentary would go<h2>
+
+<div class = 'container' id='main' style='width: 80vw; height:80vh' >
+        {{ area_name|json_script:'area_name' }}
+        {{ area_scores|json_script:'area_scores' }}
+        {{ area_colors|json_script:'area_colors' }}
+        {{ max|json_script:'max' }}
+
+        <script type='text/javascript'>
+              
+          var area_name = JSON.parse(document.getElementById('area_name').textContent);
+          var area_scores = JSON.parse(document.getElementById('area_scores').textContent);
+          var area_colors = JSON.parse(document.getElementById('area_colors').textContent);
+          var max = JSON.parse(document.getElementById('max').textContent);
+
+          var chartDom3 = document.getElementById('main');
+          var myChart3 = echarts.init(chartDom3);
+
+          option3 = {
+            color: ['darkgrey'],
+            aria: {
+              enabled: true
+          },
+            title: {
+              text: 'Business Countinuity Results',
+              left: 'center',
+            },
+            
+            radar: {
+  
+              // shape: 'circle',
+            indicator: [
+            { name: area_name[0], max: 5, color:'black',
+            axisLabel: {
+              color: 'black',
+              show: true,
+              interval: 0,
+              showMinLabel: false,
+            },},
+            { name: area_name[1], max: 5, color:'black' },
+            { name: area_name[2], max: 5, color:'black' },
+            { name: area_name[3], max: 5, color:'black' },
+            { name: area_name[4], max: 5, color:'black' },
+            { name: area_name[5], max: 5, color:'black' },
+            { name: area_name[6], max: 5, color:'black' },
+            ]
+            },
+            series: [
+              {
+                name: 'Budget vs spending',
+                type: 'radar',
+
+                data: [
+                  {
+                    axisLabel: {
+                      show: true,
+                      interval: 0
+                    },
+                    value: area_scores,
+                    name: 'Allocated Budget',
+                    label: {
+                      show: true,
+                      formatter: function (params) {
+                        return params.value;
+                      }
+                    }
+                  },
+                ]
+              }
+            ]
+          };
+    
+          myChart3.setOption(option3);
+        </script>
 </div>
 <div>
     <button onclick="location.href='{% url 'wheel' %}'"><lable>Next Survey</lable></button>
 </div>
-<!--
-    <input type='submit' value=Logout >
--->
-</form>
-{% endblock %}
+</body>
+</html>

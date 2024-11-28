@@ -74,22 +74,40 @@ def results(request,id):
         choices = create_context[1] #get list of choices to pass from create_context
         divcontext = Area.objects.values_list('divcontext', flat=True) #Get the divcontext values for each item in the results to align color with boxes
         area_and_overall_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
-        area_colors = area_and_overall_colors[0] #new
-        overall_color = area_and_overall_colors[1] #new
+        area_colors = list(area_and_overall_colors[0]) ## get colors for context for radar plot and flowchart
+        overall_color = area_and_overall_colors[1] # get colors for context for flowchart
+        # Create data for radar plot and set display order to colockwide
+        radar_data = radarplot(area_and_overall_colors)
+        area_name = radar_data[0]
+        area_scores = radar_data[1]
+        max_scores = radar_data[2]
+        print(area_name, area_scores)
         opacity= 1 # Set opacity to show outcome color on wheel
         #oc=Surveys.objects.filter(context=id).update(color=overall_color, opacity=opacity)
         oc_user=Outcome_Colors.objects.filter(user=user_id).filter(path=id).update(color=overall_color, opacity=opacity)
         divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css 
+
+       
+       # Context for flow digram
         context_results ={
             "respondent_id": user_name,
             "comment": results_comments,
             #"color": area_colors,
             "divcontext_colors_zip": divcontext_colors_zip, #new
             "overallcolor": overall_color, # new
+        }
+
+        #Context for radar plot
+        context_radar = {
+            'area_colors': area_colors,
+            'area_scores': area_scores,
+            'area_name': area_name,
+            'max': max_scores,
+
+
 
         }
-        context = context_results | context #combine context variables into one context to pass
-        
+        context = context_results | context | context_radar #combine context variables into one context to pass
         return render(request, "ISO22301/results.html",context)
 
 
@@ -142,7 +160,6 @@ def createheader(n,id): # n is the value to use in lists created here, refers to
         nchoices.append(n)
     surveytopics = Area.objects.filter(survey=survey_id_int).all() #used in layout to enter topics in flexbox
     areas =  Area.objects.filter(survey=survey_id_int).all().prefetch_related('question_set') #Get list of areas tied to question set
-    print(areas)
     #areatopics = Surveys.objects.filter(context=id)
     #areaheader = Area.objects.values_list('area', flat=True)
     textname= ["Text"] #Comment feild text
@@ -185,11 +202,11 @@ def determine_score(area, values,choices):
         color = score_color(average_score)
         score_result.append(color)
         start += area_frequency[n] # Start at next area - move counter by number of questions in previous area
-        area_scores.append(score)
-    score_ave_overall = aggregate_score / (area_total * max_score)
+        area_scores.append(round(average_score * max_score,1)) # Create list of average scores for radar plot, convert to 0 to 5 scale, rounded to 1 decimal place
+    score_ave_overall = aggregate_score / (area_total * max_score) # number of questions time max value of each question converted to 0 -1 scale
     overall_color = score_color_overall(score_ave_overall)
     #score_result.append(color)
-    return score_result, overall_color
+    return score_result, overall_color, area_scores, max_score
     
 def score_color(score): #Determine what color to shade scored area
     if score >= .8:
@@ -236,3 +253,18 @@ def user_logout(request):
             logout(request)
     #return redirect('logout')
     return render(request,'ISO22301/goodbye.html',)
+
+def radarplot(area_and_overall_colors):
+    #create data and names for radar plot to display in clockwise order
+    area_scores = list(area_and_overall_colors[2]) # get scores for context for radar plot, convert to list to allow JSON to work properly
+    top_value = area_scores.pop(0) #Get value to be on top of plot
+    area_scores.append(top_value) # Add top value to end of list so it will be on top of plot when reversed
+    area_scores.reverse() # Reverse list to display clockwise on radar plot
+    max_scores = int(area_and_overall_colors[3]) # get max score value for context for radar plot
+    area_name_qs = Area_Topic.objects.values_list('areatopic', flat=True) #Get the area name for radar chart as Query Set
+    area_name =list(area_name_qs) # convert Query Set to list for use in tempalte js
+    top_label = area_name.pop(0) #Get value to be on top of plot
+    area_name.append(top_label) # Add top value to to end of list so it will be on top of plot when reversed
+    area_name.reverse()# Reverse list to disply clockwise on radar plot
+
+    return area_name, area_scores, max_scores
