@@ -76,12 +76,11 @@ def results(request,id):
         area_and_overall_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
         area_colors = list(area_and_overall_colors[0]) ## get colors for context for radar plot and flowchart
         overall_color = area_and_overall_colors[1] # get colors for context for flowchart
-        # Create data for radar plot and set display order to colockwide
         radar_data = radarplot(area_and_overall_colors)
         area_name = radar_data[0]
         area_scores = radar_data[1]
         max_scores = radar_data[2]
-        print(area_name, area_scores)
+        print('color:', overall_color)
         opacity= 1 # Set opacity to show outcome color on wheel
         #oc=Surveys.objects.filter(context=id).update(color=overall_color, opacity=opacity)
         oc_user=Outcome_Colors.objects.filter(user=user_id).filter(path=id).update(color=overall_color, opacity=opacity)
@@ -209,18 +208,18 @@ def determine_score(area, values,choices):
     return score_result, overall_color, area_scores, max_score
     
 def score_color(score): #Determine what color to shade scored area
-    if score >= .8:
+    if score >= .7:
         color = "Green"
-    elif score <= .2:
+    elif score <= .3:
         color = "Red"
     else:
         color = "Yellow"
     return color
 
 def score_color_overall(score): #Determine what color to shade scored area
-    if score >= .8:
+    if score >= .7:
         color = "Green"
-    elif score <= .2:
+    elif score <= .3:
         color = "Red"
     else:
         color = "Yellow"
@@ -266,5 +265,6 @@ def radarplot(area_and_overall_colors):
     top_label = area_name.pop(0) #Get value to be on top of plot
     area_name.append(top_label) # Add top value to to end of list so it will be on top of plot when reversed
     area_name.reverse()# Reverse list to disply clockwise on radar plot
+
 
     return area_name, area_scores, max_scores

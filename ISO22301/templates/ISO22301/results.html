@@ -17,6 +17,7 @@
         {{ area_scores|json_script:'area_scores' }}
         {{ area_colors|json_script:'area_colors' }}
         {{ max|json_script:'max' }}
+        {{ overallcolor|json_script:'overallcolor' }}
 
         <script type='text/javascript'>
               
@@ -24,6 +25,8 @@
           var area_scores = JSON.parse(document.getElementById('area_scores').textContent);
           var area_colors = JSON.parse(document.getElementById('area_colors').textContent);
           var max = JSON.parse(document.getElementById('max').textContent);
+          var overall_color = JSON.parse(document.getElementById('overallcolor').textContent);
+
 
           var chartDom3 = document.getElementById('main');
           var myChart3 = echarts.init(chartDom3);
@@ -42,24 +45,24 @@
   
               // shape: 'circle',
             indicator: [
-            { name: area_name[0], max: 5, color:'black',
+            { name: area_name[0], max: max, color:'black',
             axisLabel: {
               color: 'black',
               show: true,
               interval: 0,
               showMinLabel: false,
             },},
-            { name: area_name[1], max: 5, color:'black' },
-            { name: area_name[2], max: 5, color:'black' },
-            { name: area_name[3], max: 5, color:'black' },
-            { name: area_name[4], max: 5, color:'black' },
-            { name: area_name[5], max: 5, color:'black' },
-            { name: area_name[6], max: 5, color:'black' },
+            { name: area_name[1], max: max, color:'black' },
+            { name: area_name[2], max: max, color:'black' },
+            { name: area_name[3], max: max, color:'black' },
+            { name: area_name[4], max: max, color:'black' },
+            { name: area_name[5], max: max, color:'black' },
+            { name: area_name[6], max: max, color:'black' },
             ]
             },
             series: [
               {
-                name: 'Budget vs spending',
+
                 type: 'radar',
 
                 data: [
@@ -69,7 +72,10 @@
                       interval: 0
                     },
                     value: area_scores,
-                    name: 'Allocated Budget',
+                    areaStyle: {
+                      color: overall_color,
+                      opacity: 0.5
+                    },
                     label: {
                       show: true,
                       formatter: function (params) {
