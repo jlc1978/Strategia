@@ -30,12 +30,15 @@ class Area_Topic(models.Model):
     areatopic = models.CharField(max_length=400)
     context = models.CharField(max_length=400)
     divcontext = models.CharField(max_length=400)
+    survey = models.ForeignKey(
+        Surveys, on_delete=models.CASCADE, null = True
+    )
     area = models.ForeignKey(
         Area, on_delete=models.CASCADE, null = True
     )
 
     def __str__(self):
-        return f"{self.context}: {self.areatopic}"
+        return f"{self.area} {self.context}: {self.areatopic}"
     
 class Area_Header(models.Model):
     areaheader = models.CharField(max_length=400)
@@ -97,6 +100,9 @@ class Topic(models.Model):
 
 class Question(models.Model):
     question = models.CharField(max_length=200)
+    survey = models.ForeignKey(
+        Surveys, on_delete=models.CASCADE, null=True
+    )
     topic = models.ForeignKey(
         Topic, on_delete=models.CASCADE, null=True
     )

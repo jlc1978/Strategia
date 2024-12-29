@@ -3,7 +3,21 @@
 <!DOCTYPE html>
 <html lang = 'en'>
     <link rel='stylesheet' href='{% static 'css/styles.css' %}'>
+    <style>
+        {% for x_colors in wheelcolors %}
+        {% if x_colors == 'None' %}
+            {{ x_colors.0}} {
+                opacity: .5;
+            }
 
+        {% else %}
+        {{ x_colors.0}} {
+            fill: {{ x_colors.1 }};
+            opacity: {{ x_colors.2 }};
+        }
+        {% endif %}
+        {% endfor %}
+    </style>
 <meta name='viewport' content='width=device-width, initial-scale=1'>
 <head>
     
@@ -18,23 +32,22 @@
 <svg width="585" height="566" viewBox="0 0 585 566" xmlns="http://www.w3.org/2000/svg">
     <path id="Oval" fill="#1372ea" fill-rule="evenodd" stroke="none" d="M 431.23703 330.881653 C 431.23703 253.561798 368.556915 190.881683 291.23703 190.881683 C 213.917175 190.881683 151.23703 253.561798 151.23703 330.881653 C 151.23703 408.201538 213.917175 470.881653 291.23703 470.881653 C 368.556915 470.881653 431.23703 408.201538 431.23703 330.881653 Z"/>
     <text id="Resilience" xml:space="preserve" x="193.998754" y="346" font-family="Arial Black" font-size="33.346911" font-weight="800" fill="#ffffff">Resilience</text>
-    <path id="pathbcgrey" fill="#929292" fill-rule="evenodd" stroke="#0c0d0d" stroke-width="5.6" stroke-linecap="square" d="M 395.40741 109.185547 C 395.40741 51.195618 348.397308 4.185547 290.40741 4.185547 C 232.417511 4.185547 185.40741 51.195618 185.40741 109.185547 C 185.40741 167.175446 232.417511 214.185547 290.40741 214.185547 C 348.397308 214.185547 395.40741 167.175446 395.40741 109.185547 Z"/>
-
+    <path id="pathbcgrey" fill="#929292" fill-rule="evenodd" stroke="#0c0d0d" stroke-width="4.631516" stroke-linecap="square" d="M 395.40741 109.185547 C 395.40741 51.195618 348.397308 4.185547 290.40741 4.185547 C 232.417511 4.185547 185.40741 51.195618 185.40741 109.185547 C 185.40741 167.175446 232.417511 214.185547 290.40741 214.185547 C 348.397308 214.185547 395.40741 167.175446 395.40741 109.185547 Z"/>
+    <a href='{% url 'introduction' id='#path_bc' %}'>   
     <path id="path_bc" fill="#929292" fill-rule="evenodd" stroke="#0c0d0d" stroke-width="5.6" stroke-linecap="square" d="M 395.40741 109.185547 C 395.40741 51.195618 348.397308 4.185547 290.40741 4.185547 C 232.417511 4.185547 185.40741 51.195618 185.40741 109.185547 C 185.40741 167.175446 232.417511 214.185547 290.40741 214.185547 C 348.397308 214.185547 395.40741 167.175446 395.40741 109.185547 Z"/>
-
+    </a>
     <text id="Business-Continuity" xml:space="preserve"><tspan x="225.201367" y="104" font-family="Arial Black" font-size="25.2" font-weight="800" fill="#0c0d0d" xml:space="preserve">Business</tspan><tspan x="216.80957" y="140" font-family="Arial Black" font-size="25.2" font-weight="800" fill="#0c0d0d" xml:space="preserve">Continuity</tspan></text>
     <path id="pathcmgrey" fill="#929292" fill-rule="evenodd" stroke="#0c0d0d" stroke-width="5.6" stroke-linecap="square" d="M 581.055542 457.61731 C 581.055542 399.627411 534.045471 352.61731 476.055542 352.61731 C 418.065643 352.61731 371.055542 399.627411 371.055542 457.61731 C 371.055542 515.607239 418.065643 562.61731 476.055542 562.61731 C 534.045471 562.61731 581.055542 515.607239 581.055542 457.61731 Z"/>
-
+    <a href='{% url 'introduction' id='#path_cm' %}'>
     <path id="path_cm" fill="#929292" fill-rule="evenodd" stroke="#0c0d0d" stroke-width="5.6" stroke-linecap="square"d="M 579.655579 457.61731 C 579.655579 399.627411 532.645447 352.61731 474.655548 352.61731 C 416.665649 352.61731 369.655548 399.627411 369.655548 457.61731 C 369.655548 515.607239 416.665649 562.61731 474.655548 562.61731 C 532.645447 562.61731 579.655579 515.607239 579.655579 457.61731 Z"/>
-
+    </a>
     <text id="Crisis-Management" xml:space="preserve"><tspan x="435.321875" y="451" font-family="Arial Black" font-size="25.2" font-weight="800" fill="#0c0d0d" xml:space="preserve">Crisis</tspan><tspan x="385.383301" y="487" font-family="Arial Black" font-size="25.2" font-weight="800" fill="#0c0d0d" xml:space="preserve">Management</tspan></text>
     <path id="pathrmgrey" fill="#929292" fill-rule="evenodd" stroke="#0c0d0d" stroke-width="5.6" stroke-linecap="square" d="M 214.255554 457.61731 C 214.255554 399.627411 167.245453 352.61731 109.255554 352.61731 C 51.265656 352.61731 4.255556 399.627411 4.255556 457.61731 C 4.255556 515.607239 51.265656 562.61731 109.255554 562.61731 C 167.245453 562.61731 214.255554 515.607239 214.255554 457.61731 Z"/>
-    
+    <a href='{% url 'introduction' id='#path_rm' %}'>   
     <path id="path_rm" fill="#929292" fill-rule="evenodd" stroke="#0c0d0d" stroke-width="5.6" stroke-linecap="square" d="M 212.85556 457.61731 C 212.85556 399.627411 165.845459 352.61731 107.855553 352.61731 C 49.865658 352.61731 2.855556 399.627411 2.855556 457.61731 C 2.855556 515.607239 49.865658 562.61731 107.855553 562.61731 C 165.845459 562.61731 212.85556 515.607239 212.85556 457.61731 Z"/>
- 
+    </a>
     <text id="Risk-Management" xml:space="preserve"><tspan x="77.402734" y="451" font-family="Arial Black" font-size="25.2" font-weight="800" fill="#0c0d0d" xml:space="preserve">Risk</tspan><tspan x="18.383301" y="487" font-family="Arial Black" font-size="25.2" font-weight="800" fill="#0c0d0d" xml:space="preserve">Management</tspan></text>
 </svg>  
 </div>
-<button input type='button' name=Begin Survey onclick="location.href='{% url 'introduction' id='#path_bc' %}'"><lable>Begin Survey</lable></button>
 </body>
 </html>

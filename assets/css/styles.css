@@ -137,7 +137,7 @@ th, td {
     box-sizing: border-box;
   }
 
-  .item_1, .item_2, .item_3, .item_4, .item_5, .item_6, .item_7, .item_8 {
+  .item_1, .item_2, .item_3, .item_4, .item_5, .item_6, .item_7, .item_8, .item_9, .item_10 {
     width: 8vw;
     height: 14vh;
     padding: 10px;
@@ -269,15 +269,7 @@ th, td {
     margin-right: auto;
   }
 
-  #path_cm:hover, #path_rm:hover, #path_is:hover, #path_bc:hover, #path_hr:hover, #path_ict:hover, 
-  #path_sc:hover, #path_fa:hover, #path_env:hover, #path_hs:hover, #path_em:hover, #path_center:hover {
-    opacity: .5;
-    fill: darkgrey;
-    opacity:1;
-    stroke: black;
-    stroke-opacity: 1;
-    stroke-width: 5
-  }
+
 
   #path_cm, #path_rm, #path_is, #path_bc, #path_hr, #path_ict, 
   #path_sc, #path_fa, #path_env, #path_hs, #path_em, #path_center {

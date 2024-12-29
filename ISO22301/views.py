@@ -8,12 +8,6 @@ import datetime
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
-"""def survey(request):
-    create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
-
-    context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
-    return render(request,"ISO22301/survey.html", context)"""
-
 def layout(request):
     create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
@@ -25,11 +19,16 @@ def introduction(request,id): #id is the chsend survey's svg pth to be used to i
     context_path={
         'current_path': current_path        
     }
+    print('cp ',current_path)
     create_context=createheader(0,id) #pass starting values to use to extract desired text, get tuple
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
     context = context | context_path
-    return render(request, "ISO22301/introduction.html",context)
-
+    if id == '#path_bc': # check to see which path was passed to render introduction
+        return render(request, "ISO22301/introduction.html",context)
+    elif id == '#path_cm':
+        return render(request, "ISO22301/introduction.html",context)
+    elif id == '#path_rm':
+        return render(request, "ISO22301/introduction.html",context)
 def generic(request):
     return render(request, "ISO22301/generic.html",)
 
@@ -38,11 +37,13 @@ def results(request,id):
     user_id=request.user.id
     company = request.user.groups.values_list('name',flat = True)# Get company for user logged in
     user_name=request.user #Get username value as integer id NEW
+
     context_path={
         'current_path': id # get path for selected button and pass it via context     
     }
     create_context=createheader(0,id) #pass starting values to use to extract desired text, get tuple
     survey = create_context[2]
+
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
     context = context | context_path
 # Identify whether the survey has been taken by seeing if a color has been provided
@@ -61,7 +62,8 @@ def results(request,id):
         keys_values_int=[eval(i) for i in keys_values]
         answers_values.pop(0)# remove token
         answers_values_int=[eval(i) for i in answers_values] #ietrate to create list
-        questionareas_area_id = Question.objects.values_list('area_id', flat=True) # get area names, Flat retuns just the text list of areas
+        questionareas_area_id = Question.objects.filter(survey_id = survey).values_list('area_id', flat=True) # get area names, Flat retuns just the text list of areas
+
         #user_id=request.user.id
         Comment.objects.create(comments = results_comments, user_id = user_id, company = company, username=user_name, survey_id=survey)
        # entry_time = datetime.datetime.now() #set time for data entry
@@ -76,11 +78,10 @@ def results(request,id):
         area_and_overall_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
         area_colors = list(area_and_overall_colors[0]) ## get colors for context for radar plot and flowchart
         overall_color = area_and_overall_colors[1] # get colors for context for flowchart
-        radar_data = radarplot(area_and_overall_colors)
+        radar_data = radarplot(area_and_overall_colors,survey)
         area_name = radar_data[0]
         area_scores = radar_data[1]
         max_scores = radar_data[2]
-        print('color:', overall_color)
         opacity= 1 # Set opacity to show outcome color on wheel
         #oc=Surveys.objects.filter(context=id).update(color=overall_color, opacity=opacity)
         oc_user=Outcome_Colors.objects.filter(user=user_id).filter(path=id).update(color=overall_color, opacity=opacity)
@@ -107,17 +108,19 @@ def results(request,id):
 
         }
         context = context_results | context | context_radar #combine context variables into one context to pass
+        print('results cp:', id)
         return render(request, "ISO22301/results.html",context)
 
 
     else:
-
+        print('survey cp:',id)
         return render(request, "ISO22301/survey.html",context)
+
 
 
 def wheel(request):
     user_id=request.user.id
-    print(user_id)
+    
     #Need to filter by user id
     #outcomecolors=list(Outcome_Colors.objects.values_list('path','color'))
     oc=Outcome_Colors.objects.filter(user=user_id).values_list('color', flat=True) #Get the colors for the wheel
@@ -132,7 +135,7 @@ def wheel(request):
 
 def createheader(n,id): # n is the value to use in lists created here, refers to teh ISO being generated Id is survey
     survey_id=Surveys.objects.filter(context=id).values_list("id", flat=True) #Get survey id for path
-    survey_id_int=survey_id.first() # extract integer value
+    survey_id_int=survey_id.first() #extract integer value
     #Name of browser tab
     browsertab=list(Dashboard.objects.values_list('company', flat=True))
     browsertab=browsertab[n]
@@ -140,10 +143,10 @@ def createheader(n,id): # n is the value to use in lists created here, refers to
     dashboard_title=list(Dashboard.objects.values_list('dashboard', flat=True))
     dashboard_title=dashboard_title[n]
     # names and text for both ends of LoO to extract value for current project
-    project=list(Project.objects.values_list('project', flat=True))
-    projecttext=list(Project.objects.values_list('project_text', flat=True))
-    outcome=list(Project.objects.values_list('outcome', flat=True))
-    outcometext=list(Project.objects.values_list('outcome_text', flat=True))
+    project=list(Project.objects.filter(survey_id=survey_id_int).values_list('project', flat=True))  #new
+    projecttext=list(Project.objects.filter(survey_id=survey_id_int).values_list('project_text', flat=True))
+    outcome=list(Project.objects.filter(survey_id=survey_id_int).values_list('outcome', flat=True))
+    outcometext=list(Project.objects.filter(survey_id=survey_id_int).values_list('outcome_text', flat=True))
     # Used to identify specific text for ISO
     project=project[n]
     projecttext=projecttext[n]
@@ -159,9 +162,10 @@ def createheader(n,id): # n is the value to use in lists created here, refers to
         nchoices.append(n)
     surveytopics = Area.objects.filter(survey=survey_id_int).all() #used in layout to enter topics in flexbox
     areas =  Area.objects.filter(survey=survey_id_int).all().prefetch_related('question_set') #Get list of areas tied to question set
+
     #areatopics = Surveys.objects.filter(context=id)
     #areaheader = Area.objects.values_list('area', flat=True)
-    textname= ["Text"] #Comment feild text
+    textname= ["Enter comments here"] #Comment feild text
     context_header = {
         "textname": textname,
         "area": areas,
@@ -179,7 +183,8 @@ def createheader(n,id): # n is the value to use in lists created here, refers to
     return context_header, nchoices, survey_id_int
 
 
-def determine_score(area, values,choices):
+def determine_score(area, values, choices): 
+
     area_frequency = list(Counter(area).values()) # count frequency of questions in each areas convereted to list to 
     # be used to determine how often to iterate each area when determining the area's score
     area_total = sum(area_frequency) # get total number of questions
@@ -238,7 +243,12 @@ def user_login(request):
             if user is not None:
                 login(request, user)   
                 current_time = datetime.datetime.now()
-                return redirect('wheel')
+                #eturn redirect('wheel')
+                path = 1 #Set path to 1st Survey - BC
+                context = {
+                    'path': path
+                }
+                return render(request,'ISO22301/wheel.html', context)
             else:
                 return redirect('login')
     else:
@@ -253,18 +263,17 @@ def user_logout(request):
     #return redirect('logout')
     return render(request,'ISO22301/goodbye.html',)
 
-def radarplot(area_and_overall_colors):
+def radarplot(area_and_overall_colors,survey):
     #create data and names for radar plot to display in clockwise order
     area_scores = list(area_and_overall_colors[2]) # get scores for context for radar plot, convert to list to allow JSON to work properly
     top_value = area_scores.pop(0) #Get value to be on top of plot
     area_scores.append(top_value) # Add top value to end of list so it will be on top of plot when reversed
     area_scores.reverse() # Reverse list to display clockwise on radar plot
     max_scores = int(area_and_overall_colors[3]) # get max score value for context for radar plot
-    area_name_qs = Area_Topic.objects.values_list('areatopic', flat=True) #Get the area name for radar chart as Query Set
+    area_name_qs = Area.objects.filter(survey_id = survey).values_list('area', flat=True) #Get the area name for radar chart as Query Set
     area_name =list(area_name_qs) # convert Query Set to list for use in tempalte js
     top_label = area_name.pop(0) #Get value to be on top of plot
     area_name.append(top_label) # Add top value to to end of list so it will be on top of plot when reversed
     area_name.reverse()# Reverse list to disply clockwise on radar plot
-
 
     return area_name, area_scores, max_scores

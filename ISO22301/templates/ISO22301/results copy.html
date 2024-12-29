@@ -1,0 +1,192 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang = "en">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="{% static 'js/echarts.js' %}"></script>
+    <title>{{ browsertab }}</title>
+</head>
+<body>
+    <h1>{{ dashboard_title }}</h1>
+    <h2>{{ project }}<h2>
+{% csrf_token %}
+
+<div class = 'container' id='main' style='width: 80vw; height:70vh' >
+        {{ area_name|json_script:'area_name' }}
+        {{ area_scores|json_script:'area_scores' }}
+        {{ area_colors|json_script:'area_colors' }}
+        {{ max|json_script:'max' }}
+        {{ overallcolor|json_script:'overallcolor' }}
+
+        <script type='text/javascript'>
+              
+          let area_name = JSON.parse(document.getElementById('area_name').textContent);
+          let area_scores = JSON.parse(document.getElementById('area_scores').textContent);
+          let area_colors = JSON.parse(document.getElementById('area_colors').textContent);
+          let max = JSON.parse(document.getElementById('max').textContent);
+          let overall_color = JSON.parse(document.getElementById('overallcolor').textContent);
+          const length = area_name.length;
+
+
+
+          let chartDom = document.getElementById('main');
+          let myChart = echarts.init(chartDom);
+
+          option = {
+            aria: {
+              enabled: true
+            },
+
+            radar: {
+              // shape: 'circle',
+              indicator: [
+              { name: area_name[0], max: max, color:'black',
+              axisLabel: {
+                color: 'black',
+                show: true,
+                interval: 0,
+                showMinLabel: false,
+              },},
+              { name: area_name[1], max: max, color:'black' },
+              { name: area_name[2], max: max, color:'black' },
+              { name: area_name[3], max: max, color:'black' },
+              { name: area_name[4], max: max, color:'black' },
+              { name: area_name[5], max: max, color:'black' },
+              { name: area_name[6], max: max, color:'black' },
+              ]
+            },
+            series: [
+              {
+
+                type: 'radar',
+                data: [
+                {
+                  axisLabel: {
+                    show: true,
+                    interval: 0
+
+
+                  },
+                  value: area_scores,
+                  areaStyle: {
+                    color: overall_color,
+                    opacity: 0.5
+                  },
+                  label: {
+                    show: true,
+                    color: 'grey',
+                    formatter: function (params) {
+                      return params.value;
+                    }
+                  }
+                },
+              ]
+              }
+            ]
+          };
+         
+          if (length === 6) {
+          setTimeout(function (){
+            const newIndicator = [
+            { name: area_name[0], max: max, color:'black',
+            axisLabel: {
+              color: 'black',
+              show: true,
+              interval: 0,
+              showMinLabel: false,
+            },},
+            { name: area_name[1], max: max, color:'black' },
+            { name: area_name[2], max: max, color:'black' },
+            { name: area_name[3], max: max, color:'black' },
+            { name: area_name[4], max: max, color:'black' },
+            { name: area_name[5], max: max, color:'black' },
+            ];
+
+            const newData = [
+            {
+              axisLabel: {
+                show: true,
+                interval: 0
+              },
+              value: area_scores,
+              areaStyle: {
+                color: overall_color,
+                opacity: 0.5
+              },
+              label: {
+                show: true,
+                formatter: function (params) {
+                  return params.value;
+                }
+              }
+            },
+          ];
+          
+            
+        myChart.setOption({
+          radar: { indicator: newIndicator },
+          series: [{ data: newData }]
+      });
+    },)
+  };
+
+  if (length === 10) {
+    setTimeout(function (){
+      const newIndicator = [
+      { name: area_name[0], max: max, color:'black',
+      axisLabel: {
+        color: 'black',
+        show: true,
+        interval: 0,
+        showMinLabel: false,
+      },},
+      { name: area_name[1], max: max, color:'black' },
+      { name: area_name[2], max: max, color:'black' },
+      { name: area_name[3], max: max, color:'black' },
+      { name: area_name[4], max: max, color:'black' },
+      { name: area_name[5], max: max, color:'black' },
+      { name: area_name[6], max: max, color:'black' },
+      { name: area_name[7], max: max, color:'black' },
+      { name: area_name[8], max: max, color:'black' },
+      { name: area_name[9], max: max, color:'black' },
+      ];
+
+      const newData = [
+      {
+        axisLabel: {
+          show: true,
+          interval: 0
+        },
+        value: area_scores,
+        areaStyle: {
+          color: overall_color,
+          opacity: 0.5
+        },
+        label: {
+          show: true,
+          formatter: function (params) {
+            return params.value;
+          }
+        }
+      },
+    ];
+    
+      
+  myChart.setOption({
+    radar: { indicator: newIndicator },
+    series: [{ data: newData }]
+});
+},)
+};
+      option && myChart.setOption(option);
+
+ 
+        </script>
+</div>
+<div>
+    <button onclick="location.href='{% url 'introduction' id='#path_rm' %}'"><lable>Next Survey</lable></button>
+</div>
+</body>
+</html>
