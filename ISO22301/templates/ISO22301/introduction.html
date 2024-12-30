@@ -4,33 +4,11 @@
 <style>
 </style>
 {% csrf_token %}
-<h1>Business Continuity Management System (BCMS)</h1>
+<h1>{{ survey_title }}</h1>
 <div class=t4>
 
-
- <p>The outcomes of maintaining a BCMS are shaped by the organization's legal, regulatory, organizational and industry requirements, products and services provided, processes employed, size and structure of the organization, and the requirements of its interested parties.<p>
-
-<p>A BCMS emphasizes the importance of:</p>
-    <ul>
-    <li>understanding the organization's needs and the necessity for establishing business continuity policies and objectives;</li>
-    <li>operating and maintaining processes, capabilities and response structures for ensuring the organization will survive disruptions;</li>
-    <li>monitoring and reviewing the performance and effectiveness of the BCMS; — continual improvement based on qualitative and quantitative measures.</li>
-    </ul>
-<p>A BCMS, like any other management system, includes the following components:</p>
-<ol type=a>
-    <li>a policy;</li>
-    <li>competent people with defined responsibilities;</li>
-    <li>management processes relating to: 
-        <ol>
-            <li>policy;</li>
-            <li>planning;</li>
-            <li>implementation and operation;</li>
-            <li>performance assessment;</li>
-            <li>management review;</li>
-            <li>continual improvement;</li>
-        </ol>
-    </li> 
-    <li>documented information supporting operational control and enabling performance evaluation. </li>
+<!-- Use text in Introduction in DB for text in HTML Page-->
+{{ intro_text|safe}}
 </div>
 <button input type='button' name=Begin Survey onclick="location.href='{% url 'results' id=current_path %}'"><lable>Begin Survey</lable></button>
 {% endblock %}

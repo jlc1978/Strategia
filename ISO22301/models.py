@@ -162,5 +162,10 @@ class Outcome_Colors(models.Model):
     def __str__(self):
         return f"{self.user}  {self.username} path {self.path} is {self.color} at {self.timestamp}"
 
-
-     
+class Introduction(models.Model):
+    intro=models.CharField(max_length=2000)
+    survey = models.ForeignKey(
+        Surveys, on_delete=models.CASCADE, null = True)
+    
+    def __str__(self):
+        return f"{self.survey}: {self.intro}"

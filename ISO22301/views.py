@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Answer, Comment, Question, Area, Topic, Area_Header, Column_Header, Dashboard, Project, Area_Topic,Outcome_Colors, Surveys
+from .models import Answer, Comment, Question, Area, Topic, Area_Header, Column_Header, Dashboard, Project, Area_Topic,Outcome_Colors, Surveys, Introduction
 from collections import defaultdict, Counter
 from django.contrib.auth import authenticate, login, logout 
 from .forms import  LoginForm, LogoutForm
@@ -8,33 +8,36 @@ import datetime
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
-def layout(request):
-    create_context=createheader(0) #pass starting values to use to extract desired text, get tuple
-    context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
-    return render(request, 'ISO22301/layout.html', context)
-
 
 def introduction(request,id): #id is the chsend survey's svg pth to be used to include outcome color
-    current_path=id
+    current_path=id #get id in forma#path_xx where xx is survey
     context_path={
         'current_path': current_path        
     }
-    print('cp ',current_path)
+
     create_context=createheader(0,id) #pass starting values to use to extract desired text, get tuple
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
-    context = context | context_path
-    if id == '#path_bc': # check to see which path was passed to render introduction
-        return render(request, "ISO22301/introduction.html",context)
-    elif id == '#path_cm':
-        return render(request, "ISO22301/introduction.html",context)
-    elif id == '#path_rm':
-        return render(request, "ISO22301/introduction.html",context)
+    context = context | context_path #add current path to context
+    survey_id=Surveys.objects.filter(context=id).values_list("id", flat=True) #Get survey id for path
+    survey_title_list=list(Surveys.objects.filter(context=id).values_list("survey", flat=True))#Get survey title and convert Query Set to list for path
+    survey_title=survey_title_list[0]#Get text from list as flat text file for use in HTML rendering by reemoving [' '] from text
+    survey_id_int=survey_id.first() #extract integer value
+    intro_text_list=list(Introduction.objects.filter(survey_id =  survey_id_int).values_list('intro', flat=True)) #Get survey titleintro text and convert Query Set to list for path
+    intro_text=intro_text_list[0]#Get text from list as flat text file for use in HTML rendering by reemoving [' '] from text
+    context_survey={
+        'current_path': current_path,
+        'intro_text': intro_text,
+        'survey_title': survey_title,
+    } # pass survey specific path, title and text for introduction 
+    context = context | context_survey #add current path and text to context
+    return render(request, "ISO22301/introduction.html",context)
+    
 def generic(request):
     return render(request, "ISO22301/generic.html",)
 
 
 def results(request,id):
-    user_id=request.user.id
+    user_id=request.user.id #Get corrent user
     company = request.user.groups.values_list('name',flat = True)# Get company for user logged in
     user_name=request.user #Get username value as integer id NEW
 
@@ -42,10 +45,10 @@ def results(request,id):
         'current_path': id # get path for selected button and pass it via context     
     }
     create_context=createheader(0,id) #pass starting values to use to extract desired text, get tuple
-    survey = create_context[2]
+    survey = create_context[2] #get id of current survey from unction create_context as integer
 
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
-    context = context | context_path
+    context = context | context_path # merge context values
 # Identify whether the survey has been taken by seeing if a color has been provided
     colors=Outcome_Colors.objects.filter(user=user_id, path=id) #get QuerySet for Outcome colors
     if not colors:

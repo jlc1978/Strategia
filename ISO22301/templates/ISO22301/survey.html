@@ -1,7 +1,7 @@
 {% extends "ISO22301/layout.html" %}
 
 {% block content %}
-
+<!-- Pass form data to radar plot and results in view -->
     <form action = "{% url "results" id=current_path%}" method = "POST">
     {% csrf_token %}
 
