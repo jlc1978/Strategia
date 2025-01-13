@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Answer, Comment, Question, Area, Topic, Area_Header, Column_Header, Dashboard, Project, Area_Topic,Outcome_Colors, Surveys, Introduction
+from .models import Answer, Comment, Question, Area, Topic, Area_Header, Column_Header, Dashboard, Project, Area_Topic,Outcome_Colors, Surveys, Introduction, Final_Result,Respondent
 from collections import defaultdict, Counter
 from django.contrib.auth import authenticate, login, logout 
 from .forms import  LoginForm, LogoutForm
@@ -29,6 +29,7 @@ def introduction(request,id): #id is the chsend survey's svg pth to be used to i
         'intro_text': intro_text,
         'survey_title': survey_title,
     } # pass survey specific path, title and text for introduction 
+
     context = context | context_survey #add current path and text to context
     return render(request, "ISO22301/introduction.html",context)
     
@@ -37,10 +38,15 @@ def generic(request):
 
 
 def results(request,id):
-    user_id=request.user.id #Get corrent user
-    company = request.user.groups.values_list('name',flat = True)# Get company for user logged in
+    user_id=request.user.id #Get current user
+    group=request.user.groups.all()# Get company for user logged in
+    company=group.values_list('name', flat = True)
     user_name=request.user #Get username value as integer id NEW
-
+    respondent=Respondent.objects.filter(respondent=user_name)#Get user_name if in db
+    if not respondent: #if not in db add to Respondent
+        Respondent.objects.create(company=company, respondent=user_name, user_id=user_id) #Create entreis with user_id FK to user
+    else:
+        pass
     context_path={
         'current_path': id # get path for selected button and pass it via context     
     }
@@ -51,8 +57,9 @@ def results(request,id):
     context = context | context_path # merge context values
 # Identify whether the survey has been taken by seeing if a color has been provided
     colors=Outcome_Colors.objects.filter(user=user_id, path=id) #get QuerySet for Outcome colors
-    if not colors:
-        Outcome_Colors.objects.create(path=id, color='Blue', company=company, user_id=user_id, username=user_name, opacity= 0.0) #Default new entry for survey
+    print(id)
+    if not colors: #Check to see if already outcome colors determined
+        Outcome_Colors.objects.create(path=id, color='Blue', company=company, user_id=user_id, username=user_name, opacity= 0.0, survey_id=survey) #Default new entry for survey
     else:
         pass
 
@@ -81,7 +88,9 @@ def results(request,id):
         area_and_overall_colors = determine_score(questionareas_area_id,answers_values_int,choices) #Get backgroundcolors for areas based on results
         area_colors = list(area_and_overall_colors[0]) ## get colors for context for radar plot and flowchart
         overall_color = area_and_overall_colors[1] # get colors for context for flowchart
-        radar_data = radarplot(area_and_overall_colors,survey)
+        project = create_context[3] #Get project (survey) name to pass to radarplot store in Final_Result
+    
+        radar_data = radarplot(area_and_overall_colors,survey,user_id,company,project)
         area_name = radar_data[0]
         area_scores = radar_data[1]
         max_scores = radar_data[2]
@@ -89,13 +98,11 @@ def results(request,id):
         #oc=Surveys.objects.filter(context=id).update(color=overall_color, opacity=opacity)
         oc_user=Outcome_Colors.objects.filter(user=user_id).filter(path=id).update(color=overall_color, opacity=opacity)
         divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css 
-
        
        # Context for flow digram
         context_results ={
             "respondent_id": user_name,
             "comment": results_comments,
-            #"color": area_colors,
             "divcontext_colors_zip": divcontext_colors_zip, #new
             "overallcolor": overall_color, # new
         }
@@ -111,29 +118,16 @@ def results(request,id):
 
         }
         context = context_results | context | context_radar #combine context variables into one context to pass
-        print('results cp:', id)
         return render(request, "ISO22301/results.html",context)
 
 
     else:
-        print('survey cp:',id)
         return render(request, "ISO22301/survey.html",context)
 
 
 
 def wheel(request):
-    user_id=request.user.id
-    
-    #Need to filter by user id
-    #outcomecolors=list(Outcome_Colors.objects.values_list('path','color'))
-    oc=Outcome_Colors.objects.filter(user=user_id).values_list('color', flat=True) #Get the colors for the wheel
-    path=Outcome_Colors.objects.filter(user=user_id).values_list('path', flat=True) #get the paths to color
-    opacity=Outcome_Colors.objects.filter(user=user_id).values_list('opacity', flat=True) #get the paths to color
-    outcomecolors = list(zip(path,oc,opacity)) # create list of colors for each item
-    context = {
-       'wheelcolors': outcomecolors
-    }
-    return render(request, "ISO22301/wheel.html",context)
+    return render(request,'ISO22301/wheel.html')
 
 
 def createheader(n,id): # n is the value to use in lists created here, refers to teh ISO being generated Id is survey
@@ -165,15 +159,11 @@ def createheader(n,id): # n is the value to use in lists created here, refers to
         nchoices.append(n)
     surveytopics = Area.objects.filter(survey=survey_id_int).all() #used in layout to enter topics in flexbox
     areas =  Area.objects.filter(survey=survey_id_int).all().prefetch_related('question_set') #Get list of areas tied to question set
-
-    #areatopics = Surveys.objects.filter(context=id)
-    #areaheader = Area.objects.values_list('area', flat=True)
     textname= ["Enter comments here"] #Comment feild text
     context_header = {
         "textname": textname,
         "area": areas,
         "surveytopics": surveytopics,
-        #"areaheader": areaheader,
         "browsertab": browsertab,
         "dashboard_title": dashboard_title,
         "project": project,
@@ -183,7 +173,7 @@ def createheader(n,id): # n is the value to use in lists created here, refers to
         "nchoices": nchoices,
         "columnheader": column_header,
         }
-    return context_header, nchoices, survey_id_int
+    return context_header, nchoices, survey_id_int, project
 
 
 def determine_score(area, values, choices): 
@@ -245,13 +235,7 @@ def user_login(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)   
-                current_time = datetime.datetime.now()
-                #eturn redirect('wheel')
-                path = 1 #Set path to 1st Survey - BC
-                context = {
-                    'path': path
-                }
-                return render(request,'ISO22301/wheel.html', context)
+                return redirect('wheel')
             else:
                 return redirect('login')
     else:
@@ -266,7 +250,9 @@ def user_logout(request):
     #return redirect('logout')
     return render(request,'ISO22301/goodbye.html',)
 
-def radarplot(area_and_overall_colors,survey):
+def radarplot(area_and_overall_colors,survey,user_id,company,project):
+
+    
     #create data and names for radar plot to display in clockwise order
     area_scores = list(area_and_overall_colors[2]) # get scores for context for radar plot, convert to list to allow JSON to work properly
     top_value = area_scores.pop(0) #Get value to be on top of plot
@@ -278,5 +264,65 @@ def radarplot(area_and_overall_colors,survey):
     top_label = area_name.pop(0) #Get value to be on top of plot
     area_name.append(top_label) # Add top value to to end of list so it will be on top of plot when reversed
     area_name.reverse()# Reverse list to disply clockwise on radar plot
+    n = len(area_name) # determine area length to use in for loop
+    overall_color=area_and_overall_colors[1]
+    respondent=Respondent.objects.filter(user_id=user_id).values_list('respondent', flat=True)# get name of person taking survey to put in final_result
+    user = Final_Result.objects.filter(user_id=user_id,survey = survey) #get QuerySet for user to see if data already exists
+    if not user: # if no data exists in Final_Results create data entry
+        for x in range(n):
+            area_id=Area.objects.filter(survey = survey, area = area_name[x]).values_list('id', flat=True) #Get Arear_id to add to data for later analysis by area using integer valeu of id ratehr than name
+            data=Final_Result(user_id = user_id,area = area_name[x],scores = area_scores[x], max_scores = max_scores, survey = survey, company = company, area_id=area_id, survey_name = project, overall_color = overall_color, length = n, respondent=respondent)
+            data.save()
+    else: #If data exists update to latets answers from user
+       for x in range(n):
+            data=Final_Result.objects.filter(user_id = user_id,survey=survey,area = area_name[x]).update(scores = area_scores[x])
 
     return area_name, area_scores, max_scores
+
+def results_overall(request):
+    #Generate 3 results graphs
+    #user_id=request.user.id #get current user to identify data to use
+    user_id=1
+    browsertaball= Final_Result.objects.filter(user_id = user_id).all().values_list('company', flat =  True)
+    browsertab = browsertaball[0]
+    dashboard_title=list(Dashboard.objects.values_list('dashboard', flat=True))
+    dashboard_title=dashboard_title[0]
+    survey = Surveys.objects.all() #get all survey names
+    survey_results = Final_Result.objects.filter(user_id = user_id).all().order_by('survey') #Get all tle results for a particular user
+    survey_results_survey = survey_results.values_list('survey', flat=True) #Get list of survey to use in iteration to get unique results set to plot
+    survey_results_max = list(set(survey_results.values_list('max_scores', flat=True))) #Get max value
+    unique_surveys = list(set(survey_results_survey)) #Create list with only unique survey id by removing duplicates
+    # get number of areas in each survey to be used to determine where to start in JSON
+    survey_start = [] #dict to store each survey length
+    survey_outcome_color=[] #create dictionary of outcome colors
+    survey_name = [] #Create dctionary of survey names
+    survey_length = []
+    for n in unique_surveys: #get length of each survey
+        length = len(survey_results.filter(survey=n).values_list('survey', flat=True)) #Get length of surveys
+        survey_length.append(length) #add to dict
+        survey_color = list(set(survey_results.filter(survey=n).values_list('overall_color', flat=True)))#Get outcome color
+        survey_outcome_color.append(survey_color)#add to dict
+        name = list(survey.filter(id=n).values_list('survey', flat=True))#get survey name
+        survey_name.append(name)#add to dict
+    #Create Query Sets for each parameter to be used in creating charts - will be converted to JSON
+    survey_results_area = list(survey_results.values_list('area', flat=True))
+    #get unique set of values for each plot
+    survey_results_area1 = list(survey_results.filter(survey=unique_surveys[0]).values_list('area', flat=True))
+    survey_results_area2 = list(survey_results.filter(survey=unique_surveys[1]).values_list('area', flat=True))
+    survey_results_area3 = list(survey_results.filter(survey=unique_surveys[0]).values_list('area', flat=True))
+    survey_results_scores = list(survey_results.values('scores'))
+    context = {
+        'area_name1': survey_results_area1,
+        'area_scores1': survey_results_scores,
+        'overallcolor': survey_outcome_color,
+        'survey_length': survey_length,
+        'survey_name': survey_name,
+        'survey_max': survey_results_max,
+        'area_name2': survey_results_area2,
+        'area_scores2': survey_results_scores,
+        'area_name3': survey_results_area3,
+        'area_scores3': survey_results_scores,
+        'browsertab': browsertab,
+        'dashboard_title': dashboard_title,
+        }
+    return render(request,'ISO22301/results_overall.html', context)

@@ -12,4 +12,5 @@ urlpatterns = [
     path('introduction<str:id>', views.introduction, name='introduction'),
     path('goodbye/', views.user_logout, name='goodbye'),
     path('wheel/', views.wheel, name='wheel'),
+    path('results_overall/', views.results_overall, name='results_overall',)
 ]

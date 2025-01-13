@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 # Create your models here.
 
@@ -169,3 +169,27 @@ class Introduction(models.Model):
     
     def __str__(self):
         return f"{self.survey}: {self.intro}"
+    
+class Final_Result(models.Model):
+    user_id = models.IntegerField(null = True, blank=False)
+    area = models.CharField(max_length=300)
+    scores = models.DecimalField(max_digits=2, decimal_places=1)
+    max_scores=models.IntegerField(blank = True)
+    survey = models.IntegerField(blank = True)
+    company = models.CharField(max_length=250, null = True)
+    area_id = models.IntegerField(null = True, blank=False)
+    overall_color = models.CharField(max_length=20, null = True)
+    survey_name = models.CharField(max_length=40, null = True)
+    length = models.IntegerField(blank = True)
+    respondent = models.CharField(max_length=250, null = True)
+
+    def __str__(self):
+        return f"{self.user_id} {self.respondent} company {self.company} survey {self.survey} area {self.area} score {self.scores} max {self.max_scores} "
+    
+class Respondent(models.Model):
+    respondent = models.CharField(max_length=250, null = True)
+    company=models.CharField(max_length=250, null = True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Respondent {self.respondent} Company {self.company}"

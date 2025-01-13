@@ -1,0 +1,341 @@
+{% load static %}
+
+<html lang = "en">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="{% static 'js/echarts.js' %}"></script>
+    <title>{{ browsertab }}</title>
+</head>
+<body>
+    <h1>{{ dashboard_title }}</h1>
+    
+{% csrf_token %}
+<table class = 'container'>
+  <thead>
+  </thead>
+  <tbody>
+    <tr>
+<td class = 'drilldown' id='main1' >
+        {{ area_name1|json_script:'area_name1' }}
+        {{ area_scores1|json_script:'area_scores1' }}
+        {{ survey_max|json_script:'survey_max' }}
+        {{ overallcolor|json_script:'overallcolor' }}
+        {{ survey_name|json_script:'survey'}}
+        {{  survey_length|json_script:'length'}}
+        <script type='text/javascript'>
+              
+          let area_name1 = JSON.parse(document.getElementById('area_name1').textContent);
+          let area_scores1 = JSON.parse(document.getElementById('area_scores1').textContent);
+          let max = JSON.parse(document.getElementById('survey_max').textContent);
+          let overall_color = JSON.parse(document.getElementById('overallcolor').textContent);
+          let survey = JSON.parse(document.getElementById('survey').textContent);
+          let length = JSON.parse(document.getElementById('length').textContent);
+          const n = length[0];
+
+
+
+          let chartDom1 = document.getElementById('main1');
+          let myChart1 = echarts.init(chartDom1);
+          // Auto resize chart
+          window.addEventListener('resize', function() {
+            myChart1.resize();
+            });
+          option1 = {
+            aria: {
+              enabled: true
+            },
+            grid: [
+            {},
+            {
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+              show: true,
+              borderColor: 'black',
+              borderWidth: 5,
+            }
+            ],
+            title: {
+              left: 'center',
+              padding:10,
+              itemGap: 5, //Gap beten title and subtitle
+              text: survey[0],
+              textStyle: {
+                color: 'black',
+                fontSize: 18,
+              },
+              subtext: 'Status: ' + overall_color[0], // Display over all color result in title
+              subtextStyle: {
+                color: 'black',
+                fontSize: 15,
+              }
+            },
+
+              radar: {
+              // shape: 'circle',
+              radius: ["0%", "60%",], //Size of plot
+           
+              indicator: [
+              { name: area_name1[0], max: max, color:'black',
+              axisLabel: {
+                color: 'black',
+                show: true,
+                interval: 0,
+                showMinLabel: false,
+              },},
+              ...Array.from({length: n - 1}, // create data set based on number of data points
+              (_, i) => ({name: area_name1[i + 1], max: max, color: 'black'}))
+               ]
+            },
+            series: [
+              {
+
+                type: 'radar',
+                data: [
+                {
+                  axisLabel: {
+                    show: true,
+                    interval: 0
+
+
+                  },
+                  value: area_scores1,
+                  areaStyle: {
+                    color: overall_color[0],
+                    opacity: 0.5
+                  },
+                  label: {
+                    show: true,
+                    color: 'grey',
+                    formatter: function (params) {
+                      return params.value;
+                    }
+                  }
+                },
+              ]
+              }
+            ]
+            };
+
+  option1 && myChart1.setOption(option1);
+
+
+ 
+        </script>
+      </td>
+      <td class = 'drilldown' id='main2' >
+        {{ area_name2|json_script:'area_name2' }}
+        {{ area_scores2|json_script:'area_scores2' }}
+      <script type='text/javascript'>
+              
+        let area_name2 = JSON.parse(document.getElementById('area_name2').textContent);
+        let area_scores2 = JSON.parse(document.getElementById('area_scores2').textContent);
+        const n2 = length[1];
+
+
+
+        let chartDom2 = document.getElementById('main2');
+        let myChart2 = echarts.init(chartDom2);
+         // Auto resize chart
+         window.addEventListener('resize', function() {
+          myChart2.resize();
+          });
+        option2 = {
+          aria: {
+            enabled: true
+          },
+          grid: [
+          {},
+          {
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            show: true,
+            borderColor: 'black',
+            borderWidth: 5,
+          }
+          ],
+          title: {
+            left: 'center',
+            padding:10,
+            itemGap: 5, //Gap beten title and subtitle
+            text: survey[1],
+            textStyle: {
+              color: 'black',
+              fontSize: 18,
+            },
+            subtext: 'Status: ' + overall_color[1], // Display over all color result in title
+            subtextStyle: {
+              color: 'black',
+              fontSize: 15,
+            }
+          },
+
+            radar: {
+            // shape: 'circle',
+            radius: ["0%", "60%",], //Size of plot
+         
+            indicator: [
+            { name: area_name2[0], max: max, color:'black',
+            axisLabel: {
+              color: 'black',
+              show: true,
+              interval: 0,
+              showMinLabel: false,
+            },},
+            ...Array.from({length: n2 - 1}, // create data set based on number of data points
+            (_, i) => ({name: area_name2[i + 1], max: max, color: 'black'}))
+             ]
+          },
+          series: [
+            {
+
+              type: 'radar',
+              data: [
+              {
+                axisLabel: {
+                  show: true,
+                  interval: 0
+
+
+                },
+                value: area_scores2,
+                areaStyle: {
+                  color: overall_color[1],
+                  opacity: 0.5
+                },
+                label: {
+                  show: true,
+                  color: 'grey',
+                  formatter: function (params) {
+                    return params.value;
+                  }
+                }
+              },
+            ]
+            }
+          ]
+          };
+
+option2 && myChart2.setOption(option2);
+
+
+
+      </script>
+      </td>
+      <td class = 'drilldown' id='main3' >
+        {{ area_name3|json_script:'area_name3' }}
+        {{ area_scores3|json_script:'area_scores3' }}
+      <script type='text/javascript'>
+              
+        let area_name3 = JSON.parse(document.getElementById('area_name3').textContent);
+        let area_scores3 = JSON.parse(document.getElementById('area_scores3').textContent);
+        const n3 = length[2];
+
+
+
+        let chartDom3 = document.getElementById('main3');
+        let myChart3 = echarts.init(chartDom3);
+         // Auto resize chart
+         window.addEventListener('resize', function() {
+          myChart3.resize();
+          });
+        option3 = {
+          aria: {
+            enabled: true
+          },
+          grid: [
+          {},
+          {
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            show: true,
+            borderColor: 'black',
+            borderWidth: 5,
+          }
+          ],
+          title: {
+            left: 'center',
+            padding:10,
+            itemGap: 5, //Gap beten title and subtitle
+            text: survey[2],
+            textStyle: {
+              color: 'black',
+              fontSize: 18,
+            },
+            subtext: 'Status: ' + overall_color[2], // Display over all color result in title
+            subtextStyle: {
+              color: 'black',
+              fontSize: 15,
+            }
+          },
+
+            radar: {
+            // shape: 'circle',
+            radius: ["0%", "60%",], //Size of plot
+         
+            indicator: [
+            { name: area_name3[0], max: max, color:'black',
+            axisLabel: {
+              color: 'black',
+              show: true,
+              interval: 0,
+              showMinLabel: false,
+            },},
+            ...Array.from({length: n3 - 1}, // create data set based on number of data points
+            (_, i) => ({name: area_name3[i + 1], max: max, color: 'black'}))
+             ]
+          },
+          series: [
+            {
+
+              type: 'radar',
+              data: [
+              {
+                axisLabel: {
+                  show: true,
+                  interval: 0
+
+
+                },
+                value: area_scores2,
+                areaStyle: {
+                  color: overall_color[1],
+                  opacity: 0.5
+                },
+                label: {
+                  show: true,
+                  color: 'grey',
+                  formatter: function (params) {
+                    return params.value;
+                  }
+                }
+              },
+            ]
+            }
+          ]
+          };
+
+option3 && myChart3.setOption(option3);
+
+
+
+      </script>
+      </td>
+    </tr>
+<div>
+  {% if current_path == '#path_bc' %}
+    <button onclick="location.href='{% url 'introduction' id='#path_cm' %}'"><lable>Next Survey CM</lable></button>
+  {% elif current_path == '#path_cm' %}
+    <button onclick="location.href='{% url 'introduction' id='#path_rm' %}'"><lable>Next Survey RM</lable></button>
+  {% elif current_path == '#path_rm' %}
+    <button onclick="window.print()">Print this page</button>
+  {% endif %}
+</div>
+</body>
+</html>

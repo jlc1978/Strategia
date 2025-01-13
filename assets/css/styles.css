@@ -53,6 +53,10 @@ th, td {
     text-align: center;
   }
 
+  h3{
+    text-align: center;
+  }
+
   form{
     text-align: center;
   }
@@ -61,16 +65,7 @@ th, td {
     margin: 0 0 1em 0;
   }
   
-  .container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 100wh;
-    margin-bottom: 1vh;
-    margin-left: auto; 
-    margin-right: auto;
-  }
+ 
   
   .containervert {
     display: flex;
@@ -288,3 +283,19 @@ th, td {
     fill: red;
     opacity: .5;
   }
+
+  .container {
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    justify-content: center;
+    margin-bottom: 1vh;
+    margin:auto;
+  }
+
+  td.drilldown{
+    width: 25vw;
+    height: 40vh;
+    border: none
+
+}

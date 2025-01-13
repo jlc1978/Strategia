@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Answer, Comment, Question, Area, Topic, ISO, Area_Header, Column_Header, Choice, Project, Dashboard, Area_Topic, Surveys, Outcome_Colors, Introduction
+from .models import Answer, Comment, Question, Area, Topic, ISO, Area_Header, Column_Header, Choice, Project, Dashboard, Area_Topic, Surveys, Outcome_Colors, Introduction, Final_Result
 
 # Register your models here.
 
@@ -18,3 +18,4 @@ admin.site.register(Area_Topic)
 admin.site.register(Surveys)
 admin.site.register(Outcome_Colors)
 admin.site.register(Introduction)
+admin.site.register(Final_Result)

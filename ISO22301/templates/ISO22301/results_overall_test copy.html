@@ -14,11 +14,12 @@
 {% csrf_token %}
 
 <div class = 'container' id='main' style='width: 80vw; height:70vh' >
-        {{ area_name|json_script:'area_name' }}
-        {{ area_scores|json_script:'area_scores' }}
-        {{ max|json_script:'max' }}
-        {{ overallcolor|json_script:'overallcolor' }}
-        {{ project|json_script:'survey'}}
+    {{ area_name|json_script:'area_name' }}
+    {{ area_scores|json_script:'area_scores' }}
+    {{ max|json_script:'max' }}
+    {{ overallcolor|json_script:'overallcolor' }}
+    {{ project|json_script:'survey'}}
+    {{ length|json_script:survey_length}}
 
         <script type='text/javascript'>
               
