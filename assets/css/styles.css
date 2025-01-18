@@ -36,6 +36,7 @@ th, td {
   table{
     width: 90vw;
     margin-bottom: 0px;
+    border: none;
   }
   table.center {
     margin-left: auto; 
@@ -314,8 +315,12 @@ th, td {
   td.area {
     text-align: left;
     width: 50vw;
-
   }
+
+  td_noborder {
+    border-style: none;
+  }
+ 
 
   /* container for results page */
 .container_results {
