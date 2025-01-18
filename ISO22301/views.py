@@ -253,7 +253,6 @@ def user_logout(request):
 
 def radarplot(area_and_overall_colors,survey,user_id,company,project):
 
-    
     #create data and names for radar plot to display in clockwise order
     area_scores = list(area_and_overall_colors[2]) # get scores for context for radar plot, convert to list to allow JSON to work properly
     #Order scores for graph to appear clockwise
@@ -280,7 +279,7 @@ def radarplot(area_and_overall_colors,survey,user_id,company,project):
     if not user: # if no data exists in Final_Results create data entry
         for x in range(n):
             area_id=Area.objects.filter(survey = survey, area = area_name[x]).values_list('id', flat=True) #Get Arear_id to add to data for later analysis by area using integer valeu of id ratehr than name
-            data=Final_Result(user_id = user_id,area = area_name[x],scores = area_scores[x],area_color = area_colors[n],max_scores = max_scores, survey = survey, company = company, area_id=area_id, survey_name = project, overall_color = overall_color, length = n, respondent=respondent)
+            data=Final_Result(user_id = user_id,area = area_name[x],scores = area_scores[x],area_color = area_colors[x],max_scores = max_scores, survey = survey, company = company, area_id=area_id, survey_name = project, overall_color = overall_color, length = n, respondent=respondent)
             data.save()
     else: #If data exists update to latets answers from user
        for x in range(n):
@@ -290,8 +289,7 @@ def radarplot(area_and_overall_colors,survey,user_id,company,project):
 
 def results_overall(request):
     #Generate 3 results graphs
-    #user_id=request.user.id #get current user to identify data to use
-    user_id=1
+    user_id=request.user.id #get current user to identify data to use
     browsertaball= Final_Result.objects.filter(user_id = user_id).all().values_list('company', flat =  True)
     browsertab = browsertaball[0]
     dashboard_title=list(Dashboard.objects.values_list('dashboard', flat=True))

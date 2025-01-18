@@ -2,6 +2,7 @@
 
 <html lang = "en">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{% csrf_token %}
 <head>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <script src="{% static 'js/echarts.js' %}"></script>
@@ -18,15 +19,11 @@
 
     </style>
     <title>{{ browsertab }}</title>
-</head>
-<body>
-    <h1>{{ dashboard_title }}</h1>
+    <body>
 
-{% csrf_token %}
+    <h1>{{ dashboard_title }}
 <div class = 'containerprint'>
 <table class = 'container'>
-  <thead>
-  </thead>
   <tbody>
 
     <tr>
@@ -338,13 +335,11 @@ option2 && myChart2.setOption(option2);
 
 </body>
 </table>
-</div>
-<head>
-</head>
-<body>
+
+
 <div class="row">
   <div class="column">
-<table>
+<table style ='width:29.5vw'>
   <!-- List is reversed to display in proper order -->
    {% for text in results_text3 reversed %}
    <tr>
@@ -357,7 +352,7 @@ option2 && myChart2.setOption(option2);
   </table>
 </div>
     <div class="column">
-      <table>
+      <table style ='width:29.5vw'>
          {% for text in results_text1 reversed %}
          <tr>
          <td class = 'area'>
@@ -369,7 +364,7 @@ option2 && myChart2.setOption(option2);
         </table>
       </div>
       <div class="column">
-        <table>
+        <table style ='width:29.5vw'>
            {% for text in results_text2 reversed %}
            <tr>
            <td class = 'area'>
