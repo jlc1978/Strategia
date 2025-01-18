@@ -182,6 +182,7 @@ class Final_Result(models.Model):
     survey_name = models.CharField(max_length=40, null = True)
     length = models.IntegerField(blank = True)
     respondent = models.CharField(max_length=250, null = True)
+    area_color = models.CharField(max_length=20, null = True)
 
     def __str__(self):
         return f"{self.user_id} {self.respondent} company {self.company} survey {self.survey} area {self.area} score {self.scores} max {self.max_scores} "

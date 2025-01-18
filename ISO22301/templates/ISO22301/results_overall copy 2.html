@@ -5,160 +5,48 @@
 <head>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <script src="{% static 'js/echarts.js' %}"></script>
-    <style>
-      @page {
-        size: A4;
-        orientation: landscape;
-        margin: 20mm;
-    }
-    .containerprint {
-      width: 60%;
-      padding: 20mm;
-  }
-
-    </style>
     <title>{{ browsertab }}</title>
 </head>
 <body>
     <h1>{{ dashboard_title }}</h1>
 
 {% csrf_token %}
-<div class = 'containerprint'>
 <table class = 'container'>
   <thead>
   </thead>
   <tbody>
 
     <tr>
-<!-- Note: Surveys is a list of all surveys and BCMS is the 4th in th list, otehrs are all filtered so only 3 values fo reach list-->
       <td>
-      {{ survey_name.3}} Status: {{outcome_color.2}}
+      {{ survey_name.0}} Status: {{status_color1}}
       </td>
       <td>
-      {{ survey_name.0}} Status: {{outcome_color.0}}
+      {{ survey_name.1}} Status: {{status_color2}}
       </td>
       <td>
-      {{ survey_name.1}} Status: {{outcome_color.1}}
+      {{ survey_name.3}} Status: {{status_color2}}
       </td>
-
     </tr>
     <tr>
-      <td class = 'drilldown' id='main3' >
-        {{ survey_max|json_script:'survey_max' }}
-        {{ overallcolor|json_script:'overallcolor' }}
-        {{ survey_name|json_script:'survey'}}
-        {{ survey_length|json_script:'length'}}
-        {{ outcome_color|json_script:'outcome_color'}}
-
-        {{ area_name3|json_script:'area_name3' }}
-        {{ area_scores3|json_script:'area_scores3' }}
-
-
-  
-      <script type='text/javascript'>
-        let max = JSON.parse(document.getElementById('survey_max').textContent);
-        let overall_color = JSON.parse(document.getElementById('overallcolor').textContent);
-        let survey = JSON.parse(document.getElementById('survey').textContent);
-        let length = JSON.parse(document.getElementById('length').textContent);
-
-        let outcome_color = JSON.parse(document.getElementById('outcome_color').textContent);
-
-        let area_name3 = JSON.parse(document.getElementById('area_name3').textContent);
-        let area_scores3 = JSON.parse(document.getElementById('area_scores3').textContent);
-
-
-        const n3 = length[2];
-
-
-
-        let chartDom3 = document.getElementById('main3');
-        let myChart3 = echarts.init(chartDom3);
-         // Auto resize chart
-         window.addEventListener('resize', function() {
-          myChart3.resize();
-          });
-        option3 = {
-          aria: {
-            enabled: true
-          },
-          grid: [
-          {},
-          {
-            left: 0,
-            top: 0,
-            right: 0,
-            bottom: 0,
-            show: false,
-            borderColor: 'black',
-            borderWidth: 5,
-          }
-          ],
-
-            radar: {
-            // shape: 'circle',
-            radius: ["0%", "65%",], //Size of plot
-         
-            indicator: [
-            { name: area_name3[0], max: max, color:'black',
-            axisLabel: {
-              color: 'black',
-              show: true,
-              interval: 0,
-              showMinLabel: false,
-            },},
-            ...Array.from({length: n3 - 1}, // create data set based on number of data points
-            (_, i) => ({name: area_name3[i + 1], max: max, color: 'black'}))
-             ]
-          },
-          series: [
-            {
-
-              type: 'radar',
-              data: [
-              {
-                axisLabel: {
-                  show: true,
-                  interval: 0
-
-
-                },
-                value: area_scores3,
-                areaStyle: {
-                  color: outcome_color[2],
-                  opacity: 0.5
-                },
-                label: {
-                  show: false,
-                  color: 'grey',
-                  formatter: function (params) {
-                    return params.value;
-                  }
-                }
-              },
-            ]
-            }
-          ]
-          };
-
-option3 && myChart3.setOption(option3);
-
-
-
-      </script>
-      </td>
 <td class = 'drilldown' id='main1' >
 
         {{ area_name1|json_script:'area_name1' }}
         {{ area_scores1|json_script:'area_scores1' }}
-
-
+        {{ survey_max|json_script:'survey_max' }}
+        {{ overallcolor|json_script:'overallcolor' }}
+        {{ status_color1|json_script:'status_color1' }}
+        {{ survey_name|json_script:'survey'}}
+        {{ survey_length|json_script:'length'}}
 
         <script type='text/javascript'>
               
           let area_name1 = JSON.parse(document.getElementById('area_name1').textContent);
           let area_scores1 = JSON.parse(document.getElementById('area_scores1').textContent);
-
- 
+          let max = JSON.parse(document.getElementById('survey_max').textContent);
+          let overall_color = JSON.parse(document.getElementById('overallcolor').textContent);
+          let status_color1 = JSON.parse(document.getElementById('status_color1').textContent);
+          let survey = JSON.parse(document.getElementById('survey').textContent);
+          let length = JSON.parse(document.getElementById('length').textContent);
           const n = length[0];
 
 
@@ -186,11 +74,20 @@ option3 && myChart3.setOption(option3);
               borderWidth: 5,
             }
             ],
-
+            title: {
+              left: 'center',
+              padding:10,
+              itemGap: 5, //Gap beten title and subtitle
+              text: survey[0] + ' Status: ' + overall_color[0],
+              textStyle: {
+                color: 'black',
+                fontSize: 18,
+              },
+            },
 
               radar: {
               // shape: 'circle',
-              radius: ["0%", "65%",], //Size of plot
+              radius: ["0%", "60%",], //Size of plot
            
               indicator: [
               { name: area_name1[0], max: max, color:'black',
@@ -218,7 +115,7 @@ option3 && myChart3.setOption(option3);
                   },
                   value: area_scores1,
                   areaStyle: {
-                    color: outcome_color[0],
+                    color: status_color1,
                     opacity: 0.5
                   },
                   label: {
@@ -244,13 +141,13 @@ option3 && myChart3.setOption(option3);
       <td class = 'drilldown' id='main2' >
         {{ area_name2|json_script:'area_name2' }}
         {{ area_scores2|json_script:'area_scores2' }}
-
+        {{ status_color2|json_script:'status_color2' }}
         
       <script type='text/javascript'>
               
         let area_name2 = JSON.parse(document.getElementById('area_name2').textContent);
         let area_scores2 = JSON.parse(document.getElementById('area_scores2').textContent);
-
+        let status_color2 = JSON.parse(document.getElementById('status_color2').textContent);
         const n2 = length[1];
 
 
@@ -278,11 +175,20 @@ option3 && myChart3.setOption(option3);
             borderWidth: 5,
           }
           ],
-
+          title: {
+            left: 'center',
+            padding:10,
+            itemGap: 5, //Gap beten title and subtitle
+            text: survey[1] + ' Status: ' + overall_color[1],
+            textStyle: {
+              color: 'black',
+              fontSize: 18,
+            },
+          },
 
             radar: {
             // shape: 'circle',
-            radius: ["0%", "65%",], //Size of plot
+            radius: ["0%", "60%",], //Size of plot
          
             indicator: [
             { name: area_name2[0], max: max, color:'black',
@@ -310,7 +216,7 @@ option3 && myChart3.setOption(option3);
                 },
                 value: area_scores2,
                 areaStyle: {
-                  color: outcome_color[1],
+                  color: status_color2,
                   opacity: 0.5
                 },
                 label: {
@@ -333,56 +239,114 @@ option2 && myChart2.setOption(option2);
       </script>
       </td>
 
-  
-    </tr>
+      <td class = 'drilldown' id='main3' >
+        {{ area_name3|json_script:'area_name3' }}
+        {{ area_scores3|json_script:'area_scores3' }}
+        {{ status_color3|json_script:'status_color3' }}
+      <script type='text/javascript'>
+              
+        let area_name3 = JSON.parse(document.getElementById('area_name3').textContent);
+        let area_scores3 = JSON.parse(document.getElementById('area_scores3').textContent);
+        let status_color3 = JSON.parse(document.getElementById('status_color3').textContent);
 
-</body>
-</table>
-</div>
-<head>
-</head>
-<body>
-<div class="row">
-  <div class="column">
-<table>
-  <!-- List is reversed to display in proper order -->
-   {% for text in results_text3 reversed %}
-   <tr>
-   <td class = 'area'>
-    {{text.0}} </td>
-   <td>{{text.2}}</td>
-   <td>{{text.1}}</td>
-   </tr>
-   {% endfor %}
-  </table>
-</div>
-    <div class="column">
-      <table>
-         {% for text in results_text1 reversed %}
-         <tr>
-         <td class = 'area'>
-          {{text.0}} </td>
-         <td>{{text.2}}</td>
-         <td>{{text.1}}</td>
-         </tr>
-         {% endfor %}
-        </table>
-      </div>
-      <div class="column">
-        <table>
-           {% for text in results_text2 reversed %}
-           <tr>
-           <td class = 'area'>
-            {{text.0}} </td>
-           <td>{{text.2}}</td>
-           <td>{{text.1}}</td>
-           </tr>
-           {% endfor %}
-          </table>
-        </div>
-    </div>
-  </body>
+        const n3 = length[2];
+
+
+
+        let chartDom3 = document.getElementById('main3');
+        let myChart3 = echarts.init(chartDom3);
+         // Auto resize chart
+         window.addEventListener('resize', function() {
+          myChart3.resize();
+          });
+        option3 = {
+          aria: {
+            enabled: true
+          },
+          grid: [
+          {},
+          {
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            show: false,
+            borderColor: 'black',
+            borderWidth: 5,
+          }
+          ],
+          title: {
+            left: 'center',
+            padding:10,
+            itemGap: 5, //Gap beten title and subtitle
+            text: survey[3] + ' Status: ' + overall_color[2],
+            textStyle: {
+              color: 'black',
+              fontSize: 18,
+            },
+          },
+
+            radar: {
+            // shape: 'circle',
+            radius: ["0%", "60%",], //Size of plot
+         
+            indicator: [
+            { name: area_name3[0], max: max, color:'black',
+            axisLabel: {
+              color: 'black',
+              show: true,
+              interval: 0,
+              showMinLabel: false,
+            },},
+            ...Array.from({length: n3 - 1}, // create data set based on number of data points
+            (_, i) => ({name: area_name3[i + 1], max: max, color: 'black'}))
+             ]
+          },
+          series: [
+            {
+
+              type: 'radar',
+              data: [
+              {
+                axisLabel: {
+                  show: true,
+                  interval: 0
+
+
+                },
+                value: area_scores3,
+                areaStyle: {
+                  color: status_color3,
+                  opacity: 0.5
+                },
+                label: {
+                  show: false,
+                  color: 'grey',
+                  formatter: function (params) {
+                    return params.value;
+                  }
+                }
+              },
+            ]
+            }
+          ]
+          };
+
+option3 && myChart3.setOption(option3);
+
+
+
+      </script>
+      </td>
+    </tr>
 <div>
-  <button onclick="window.print()">Print this page</button>
+  {% if current_path == '#path_bc' %}
+    <button onclick="location.href='{% url 'introduction' id='#path_cm' %}'"><lable>Next Survey CM</lable></button>
+  {% elif current_path == '#path_cm' %}
+    <button onclick="location.href='{% url 'introduction' id='#path_rm' %}'"><lable>Next Survey RM</lable></button>
+  {% elif current_path == '#path_rm' %}
+    <button onclick="window.print()">Print this page</button>
+  {% endif %}
 </div>
+</body>
 </html>

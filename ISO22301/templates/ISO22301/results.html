@@ -10,10 +10,11 @@
 </head>
 <body>
     <h1>{{ dashboard_title }}</h1>
+    <h1>{{ overallcolor }}</h1>
 
 {% csrf_token %}
 
-<div class = 'container' id='main' style='width: 80vw; height:70vh' >
+<div class = 'container_results' id='main' style='width: 80vw; height:70vh' >
         {{ area_name|json_script:'area_name' }}
         {{ area_scores|json_script:'area_scores' }}
         {{ max|json_script:'max' }}
@@ -106,11 +107,11 @@
 </div>
 <div>
   {% if current_path == '#path_bc' %}
-    <button onclick="location.href='{% url 'introduction' id='#path_cm' %}'"><lable>Next Survey CM</lable></button>
+    <button onclick="location.href='{% url 'introduction' id='#path_cm' %}'"><lable>Crisis Management Survey</lable></button>
   {% elif current_path == '#path_cm' %}
-    <button onclick="location.href='{% url 'introduction' id='#path_rm' %}'"><lable>Next Survey RM</lable></button>
+    <button onclick="location.href='{% url 'introduction' id='#path_rm' %}'"><lable>Risk Management Survey</lable></button>
   {% elif current_path == '#path_rm' %}
-    <button onclick="window.print()">Print this page</button>
+    <button onclick="location.href='{% url 'results_overall' %}'"><lable>Results</lable></button>
   {% endif %}
 </div>
 </body>

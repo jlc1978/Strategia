@@ -57,7 +57,7 @@ def results(request,id):
     context = context | context_path # merge context values
 # Identify whether the survey has been taken by seeing if a color has been provided
     colors=Outcome_Colors.objects.filter(user=user_id, path=id) #get QuerySet for Outcome colors
-    print(id)
+
     if not colors: #Check to see if already outcome colors determined
         Outcome_Colors.objects.create(path=id, color='Blue', company=company, user_id=user_id, username=user_name, opacity= 0.0, survey_id=survey) #Default new entry for survey
     else:
@@ -98,7 +98,6 @@ def results(request,id):
         #oc=Surveys.objects.filter(context=id).update(color=overall_color, opacity=opacity)
         oc_user=Outcome_Colors.objects.filter(user=user_id).filter(path=id).update(color=overall_color, opacity=opacity)
         divcontext_colors_zip = list(zip(divcontext,area_colors))# great tuple with divconetxt and color to use in results css 
-       
        # Context for flow digram
         context_results ={
             "respondent_id": user_name,
@@ -202,22 +201,24 @@ def determine_score(area, values, choices):
         area_scores.append(round(average_score * max_score,1)) # Create list of average scores for radar plot, convert to 0 to 5 scale, rounded to 1 decimal place
     score_ave_overall = aggregate_score / (area_total * max_score) # number of questions time max value of each question converted to 0 -1 scale
     overall_color = score_color_overall(score_ave_overall)
-    #score_result.append(color)
+
     return score_result, overall_color, area_scores, max_score
     
 def score_color(score): #Determine what color to shade scored area
-    if score >= .7:
+
+    if score > .7:
         color = "Green"
-    elif score <= .3:
+    elif score < .3:
         color = "Red"
     else:
         color = "Yellow"
     return color
 
-def score_color_overall(score): #Determine what color to shade scored area
-    if score >= .7:
+def score_color_overall(score): #Determine what color to shade survey overall
+
+    if score > .7:
         color = "Green"
-    elif score <= .3:
+    elif score < .3:
         color = "Red"
     else:
         color = "Yellow"
@@ -255,27 +256,35 @@ def radarplot(area_and_overall_colors,survey,user_id,company,project):
     
     #create data and names for radar plot to display in clockwise order
     area_scores = list(area_and_overall_colors[2]) # get scores for context for radar plot, convert to list to allow JSON to work properly
+    #Order scores for graph to appear clockwise
     top_value = area_scores.pop(0) #Get value to be on top of plot
     area_scores.append(top_value) # Add top value to end of list so it will be on top of plot when reversed
     area_scores.reverse() # Reverse list to display clockwise on radar plot
     max_scores = int(area_and_overall_colors[3]) # get max score value for context for radar plot
     area_name_qs = Area.objects.filter(survey_id = survey).values_list('area', flat=True) #Get the area name for radar chart as Query Set
     area_name =list(area_name_qs) # convert Query Set to list for use in tempalte js
+    #Order labels for graph so names appear clockwise
     top_label = area_name.pop(0) #Get value to be on top of plot
     area_name.append(top_label) # Add top value to to end of list so it will be on top of plot when reversed
     area_name.reverse()# Reverse list to disply clockwise on radar plot
     n = len(area_name) # determine area length to use in for loop
-    overall_color=area_and_overall_colors[1]
+    overall_color=area_and_overall_colors[1] # Get color for survey
+    area_colors = area_and_overall_colors[0] # Get color for each area
+    # Order colors for grah so to appear clockwise
+    top_value = area_colors.pop(0) #Get value to be on top of plot
+    area_colors.append(top_value) # Add top value to end of list so it will be on top of plot when reversed
+    area_colors.reverse() # Reverse list to display clockwise on radar plot
+
     respondent=Respondent.objects.filter(user_id=user_id).values_list('respondent', flat=True)# get name of person taking survey to put in final_result
     user = Final_Result.objects.filter(user_id=user_id,survey = survey) #get QuerySet for user to see if data already exists
     if not user: # if no data exists in Final_Results create data entry
         for x in range(n):
             area_id=Area.objects.filter(survey = survey, area = area_name[x]).values_list('id', flat=True) #Get Arear_id to add to data for later analysis by area using integer valeu of id ratehr than name
-            data=Final_Result(user_id = user_id,area = area_name[x],scores = area_scores[x], max_scores = max_scores, survey = survey, company = company, area_id=area_id, survey_name = project, overall_color = overall_color, length = n, respondent=respondent)
+            data=Final_Result(user_id = user_id,area = area_name[x],scores = area_scores[x],area_color = area_colors[n],max_scores = max_scores, survey = survey, company = company, area_id=area_id, survey_name = project, overall_color = overall_color, length = n, respondent=respondent)
             data.save()
     else: #If data exists update to latets answers from user
        for x in range(n):
-            data=Final_Result.objects.filter(user_id = user_id,survey=survey,area = area_name[x]).update(scores = area_scores[x])
+            data=Final_Result.objects.filter(user_id = user_id,survey=survey,area = area_name[x]).update(scores = area_scores[x],area_color = area_colors[x], overall_color = overall_color)
 
     return area_name, area_scores, max_scores
 
@@ -288,41 +297,73 @@ def results_overall(request):
     dashboard_title=list(Dashboard.objects.values_list('dashboard', flat=True))
     dashboard_title=dashboard_title[0]
     survey = Surveys.objects.all() #get all survey names
-    survey_results = Final_Result.objects.filter(user_id = user_id).all().order_by('survey') #Get all tle results for a particular user
-    survey_results_survey = survey_results.values_list('survey', flat=True) #Get list of survey to use in iteration to get unique results set to plot
+    survey_results = Final_Result.objects.filter(user_id = user_id).all().order_by('survey') #Get all tle results for a particular user, ordered by survey ascending
+
+    survey_results_survey = survey_results.values_list('survey', flat=True) #Get list of survey to get unique results set to plot
     survey_results_max = list(set(survey_results.values_list('max_scores', flat=True))) #Get max value
-    unique_surveys = list(set(survey_results_survey)) #Create list with only unique survey id by removing duplicates
-    # get number of areas in each survey to be used to determine where to start in JSON
-    survey_start = [] #dict to store each survey length
-    survey_outcome_color=[] #create dictionary of outcome colors
-    survey_name = [] #Create dctionary of survey names
-    survey_length = []
-    for n in unique_surveys: #get length of each survey
-        length = len(survey_results.filter(survey=n).values_list('survey', flat=True)) #Get length of surveys
-        survey_length.append(length) #add to dict
-        survey_color = list(set(survey_results.filter(survey=n).values_list('overall_color', flat=True)))#Get outcome color
-        survey_outcome_color.append(survey_color)#add to dict
-        name = list(survey.filter(id=n).values_list('survey', flat=True))#get survey name
-        survey_name.append(name)#add to dict
-    #Create Query Sets for each parameter to be used in creating charts - will be converted to JSON
-    survey_results_area = list(survey_results.values_list('area', flat=True))
+    unique_surveys = list(set(survey_results_survey)) #Create list with only unique survey id by removing duplicates and use to create data sets for echarts
+   
+    survey=[*survey.values_list('survey',flat=True)] # gets list in format ['value0','value1'...]
     #get unique set of values for each plot
     survey_results_area1 = list(survey_results.filter(survey=unique_surveys[0]).values_list('area', flat=True))
     survey_results_area2 = list(survey_results.filter(survey=unique_surveys[1]).values_list('area', flat=True))
-    survey_results_area3 = list(survey_results.filter(survey=unique_surveys[0]).values_list('area', flat=True))
-    survey_results_scores = list(survey_results.values('scores'))
+    survey_results_area3 = list(survey_results.filter(survey=unique_surveys[2]).values_list('area', flat=True))
+    survey_results_scores1 = list(survey_results.filter(survey=unique_surveys[0]).values_list('scores', flat=True))
+    survey_results_scores2 = list(survey_results.filter(survey=unique_surveys[1]).values_list('scores', flat=True))
+    survey_results_scores3 = list(survey_results.filter(survey=unique_surveys[2]).values_list('scores', flat=True))
+    survey_results_colors1 = list(survey_results.filter(survey=unique_surveys[0]).values_list('area_color', flat=True))
+    survey_results_colors2 = list(survey_results.filter(survey=unique_surveys[1]).values_list('area_color', flat=True))
+    survey_results_colors3 = list(survey_results.filter(survey=unique_surveys[2]).values_list('area_color', flat=True))
+ 
+    # Get survey lengths for use in for loops in echart 
+    survey_length = []
+    length=len(survey_results_area1)
+    survey_length.append(length)
+    length=len(survey_results_area2)
+    survey_length.append(length)
+    length=len(survey_results_area3)
+    survey_length.append(length)
+
+    #create list of outcome colors
+    outcomecolorvalue1 = list(set(survey_results.filter(survey=unique_surveys[0]).values_list('overall_color', flat=True)))
+    outcomecolorvalue2 = list(set(survey_results.filter(survey=unique_surveys[1]).values_list('overall_color', flat=True)))
+    outcomecolorvalue3 = list(set(survey_results.filter(survey=unique_surveys[2]).values_list('overall_color', flat=True)))
+
+    outcome_color=outcomecolorvalue1+outcomecolorvalue2+outcomecolorvalue3 # Combine into one list in proper order
+
+    #Create text columns for display under graphs
+
+    results_text1 = [(x, y, z) for x, y, z in zip (survey_results_area1, survey_results_scores1, survey_results_colors1)]
+    top=results_text1.pop(0) # Remove first set of values to get list in proper display order
+    results_text1.append(top) # Add to end; list will be dispalyed in resed order in HTML Template
+
+    results_text2 = [(x, y, z) for x, y, z in zip (survey_results_area2, survey_results_scores2, survey_results_colors2)]
+    top=results_text2.pop(0) # Remove first set of values to get list in proper display order
+    results_text2.append(top) # Add to end; list will be dispalyed in resed order in HTML Template
+
+    results_text3 = [(x, y, z) for x, y, z in zip (survey_results_area3, survey_results_scores3, survey_results_colors3)]
+    top=results_text3.pop(0) # Remove first set of values to get list in proper display order
+    results_text3.append(top) # Add to end; list will be dispalyed in resed order in HTML Template
+ 
+    
+
     context = {
         'area_name1': survey_results_area1,
-        'area_scores1': survey_results_scores,
-        'overallcolor': survey_outcome_color,
+        'area_scores1': survey_results_scores1,
         'survey_length': survey_length,
-        'survey_name': survey_name,
         'survey_max': survey_results_max,
         'area_name2': survey_results_area2,
-        'area_scores2': survey_results_scores,
+        'area_scores2': survey_results_scores2,
         'area_name3': survey_results_area3,
-        'area_scores3': survey_results_scores,
+        'area_scores3': survey_results_scores3,
         'browsertab': browsertab,
         'dashboard_title': dashboard_title,
+        'survey_name': survey,
+        'outcome_color':outcome_color,
+        'results_text1': results_text1,
+        'results_text2': results_text2,
+        'results_text3': results_text3,
+
+
         }
     return render(request,'ISO22301/results_overall.html', context)
