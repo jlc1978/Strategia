@@ -248,7 +248,6 @@ def user_logout(request):
     if request.method == 'POST':
         if request.user.is_authenticated:
             logout(request)
-    #return redirect('logout')
     return render(request,'ISO22301/goodbye.html',)
 
 def radarplot(area_and_overall_colors,survey,user_id,company,project):

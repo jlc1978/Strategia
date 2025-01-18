@@ -10,10 +10,15 @@
 <body>
 <h1>Resilience Radar</h1>
 <h1>Login</h1>
+{% if form.errors %}
+    <p>username or password not correct</p>
+{% endif %}
+
 <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit">
+
 </form>
 
 </body>
