@@ -329,6 +329,7 @@ def results_overall(request):
     outcome_color=outcomecolorvalue1+outcomecolorvalue2+outcomecolorvalue3 # Combine into one list in proper order
 
     #Create text columns for display under graphs
+    table_header = [('Area', 'Value', 'Status')] # Create header for each table
 
     results_text1 = [(x, y, z) for x, y, z in zip (survey_results_area1, survey_results_scores1, survey_results_colors1)]
     top=results_text1.pop(0) # Remove first set of values to get list in proper display order
@@ -342,7 +343,10 @@ def results_overall(request):
     top=results_text3.pop(0) # Remove first set of values to get list in proper display order
     results_text3.append(top) # Add to end; list will be dispalyed in resed order in HTML Template
  
-    
+    #add headers to each table
+    #results_text1 = results_text1 + table_header
+    #results_text2 = results_text2 + table_header
+    #results_text3 = results_text3 + table_header
 
     context = {
         'area_name1': survey_results_area1,
@@ -360,6 +364,8 @@ def results_overall(request):
         'results_text1': results_text1,
         'results_text2': results_text2,
         'results_text3': results_text3,
+        'table_header': table_header,
+
 
 
         }

@@ -36,8 +36,8 @@ th, td {
   table{
     width: 90vw;
     margin-bottom: 0px;
-    border: none;
   }
+
   table.center {
     margin-left: auto; 
     margin-right: auto;
@@ -45,6 +45,9 @@ th, td {
   
   h1 {
     text-align: center;
+    padding:0;
+    margin:0;
+
   }
 
   h4{
@@ -317,11 +320,6 @@ th, td {
     width: 50vw;
   }
 
-  td_noborder {
-    border-style: none;
-  }
- 
-
   /* container for results page */
 .container_results {
   display: flex;
@@ -343,4 +341,35 @@ th, td {
   gap: .6vw;
 
 
+}
+
+/* Table with no borders */
+td.nb {
+  border: none;
+  font-size: 2vh;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* large text wih no border */
+
+td.nbl {
+  border: none;
+  font-size: 3vh;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+}
+/* Used to center and make bold text in table on final results as child of td*/
+
+td.areabold {
+  text-align: center;
+  width: 50vw;
+  font-weight: bold;
+}
+
+td.bold {
+  text-align: center;
+  font-weight: bold;
 }

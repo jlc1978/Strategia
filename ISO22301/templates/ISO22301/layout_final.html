@@ -1,0 +1,26 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang = "en">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <script src="{% static 'js/echarts.js' %}"></script>
+  <style>
+    @page {
+      size: A4;
+      orientation: landscape;
+      margin: 20mm;
+  }
+  .containerprint {
+    width: 60%;
+    padding: 20mm;
+}
+  </style>
+</head>
+<body>
+    <h1>{{ dashboard_title }}</h1>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

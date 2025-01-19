@@ -1,5 +1,4 @@
 {% load static %}
-
 <html lang = "en">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {% csrf_token %}
@@ -16,25 +15,26 @@
       width: 60%;
       padding: 20mm;
   }
-
     </style>
     <title>{{ browsertab }}</title>
+  </head>
     <body>
-
-    <h1>{{ dashboard_title }}
 <div class = 'containerprint'>
 <table class = 'container'>
   <tbody>
 
     <tr>
 <!-- Note: Surveys is a list of all surveys and BCMS is the 4th in th list, otehrs are all filtered so only 3 values fo reach list-->
-      <td>
+      <td class = 'nbl' colspan = 3>{{ dashboard_title }}</td>
+    </tr>
+    <tr>
+      <td class = 'nb'>
       {{ survey_name.3}} Status: {{outcome_color.2}}
       </td>
-      <td>
+      <td class = 'nb'>
       {{ survey_name.0}} Status: {{outcome_color.0}}
       </td>
-      <td>
+      <td class = 'nb'>
       {{ survey_name.1}} Status: {{outcome_color.1}}
       </td>
 
@@ -336,35 +336,64 @@ option2 && myChart2.setOption(option2);
 </body>
 </table>
 
-
 <div class="row">
   <div class="column">
 <table style ='width:29.5vw'>
+        {% for text in table_header %}
+        <tr>
+        <td class = 'areabold'>
+          {{text.0}} </td>
+        <td class = 'bold'>{{text.2}}</td>
+        <td class = 'bold'>{{text.1}}</td>
+        </tr>
+        {% endfor %}
+      
   <!-- List is reversed to display in proper order -->
-   {% for text in results_text3 reversed %}
-   <tr>
-   <td class = 'area'>
-    {{text.0}} </td>
-   <td>{{text.2}}</td>
-   <td>{{text.1}}</td>
-   </tr>
-   {% endfor %}
-  </table>
+        {% for text in results_text3 reversed %}
+        <tr>
+        <td class = 'area'>
+          {{text.0}} </td>
+        <td>{{text.2}}</td>
+        <td>{{text.1}}</td>
+        </tr>
+        {% endfor %}
+        </table>
 </div>
     <div class="column">
+
       <table style ='width:29.5vw'>
-         {% for text in results_text1 reversed %}
-         <tr>
-         <td class = 'area'>
+
+        {% for text in table_header %}
+        <tr>
+         <td class = 'areabold'>
           {{text.0}} </td>
-         <td>{{text.2}}</td>
-         <td>{{text.1}}</td>
+         <td class = 'bold'>{{text.2}}</td>
+         <td class = 'bold'>{{text.1}}</td>
          </tr>
          {% endfor %}
+
+         {% for text in results_text1 reversed %}
+         <tr>
+          <td class = 'area'>
+           {{text.0}} </td>
+          <td>{{text.2}}</td>
+          <td>{{text.1}}</td>
+          </tr>
+          {% endfor %}
         </table>
       </div>
       <div class="column">
         <table style ='width:29.5vw'>
+
+          {% for text in table_header %}
+          <tr>
+           <td class = 'areabold'>
+            {{text.0}} </td>
+           <td class = 'bold'>{{text.2}}</td>
+           <td class = 'bold'>{{text.1}}</td>
+           </tr>
+           {% endfor %}
+
            {% for text in results_text2 reversed %}
            <tr>
            <td class = 'area'>
