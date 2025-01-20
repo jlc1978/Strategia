@@ -181,7 +181,7 @@ def determine_score(area, values, choices):
     area_frequency = list(Counter(area).values()) # count frequency of questions in each areas convereted to list to 
     # be used to determine how often to iterate each area when determining the area's score
     area_total = sum(area_frequency) # get total number of questions
-    num_areas = len(Counter(area)) #determine number of areas via couter()
+    num_areas = len(Counter(area)) #determine number of areas via counter()
     aggregate_score = 0 #total score
     area_scores = [] #list of the score for each area
     score_result = []
@@ -202,7 +202,7 @@ def determine_score(area, values, choices):
         area_scores.append(round(average_score * max_score,1)) # Create list of average scores for radar plot, convert to 0 to 5 scale, rounded to 1 decimal place
     score_ave_overall = aggregate_score / (area_total * max_score) # number of questions time max value of each question converted to 0 -1 scale
     overall_color = score_color_overall(score_ave_overall)
-
+    print(choices, max_score,score,area_scores, score_ave_overall )
     return score_result, overall_color, area_scores, max_score
     
 def score_color(score): #Determine what color to shade scored area
