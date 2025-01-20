@@ -1,6 +1,18 @@
-{% extends "ISO22301/layout.html" %}
+{% load static %}
 
-{% block content %}
+<!DOCTYPE html>
+<html lang = "en">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="{% static 'js/echarts.js' %}"></script>
+    <title>{{ browsertab }}</title>
+</head>
+<body>
+    <h1>{{ dashboard_title }}</h1>
+    <h1>{{ overallcolor }}</h1>
+
+{% csrf_token %}
 <!-- Pass form data to radar plot and results in view -->
     <form action = "{% url "results" id=current_path%}" method = "POST">
     {% csrf_token %}
@@ -53,4 +65,4 @@
     </div>
     </form>
 
-{% endblock %}
+</html>
