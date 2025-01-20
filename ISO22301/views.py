@@ -153,6 +153,7 @@ def createheader(n,id): # n is the value to use in lists created here, refers to
     column_header=Column_Header.objects.all() #headers for table columns
     num_choices=list(Column_Header.objects.values_list('colcount',flat=True)) #h number of unique valoes0 to n
     num_choices_total=num_choices.count(1)
+    column_header=column_header[1:] #Remove Not Sure form column header list by slicing list
     nchoices = []
     for n in range(num_choices_total):
         nchoices.append(n)

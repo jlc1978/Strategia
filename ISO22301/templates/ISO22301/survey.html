@@ -33,17 +33,10 @@
                           <td class="question">{{ a_question.question }}</td>
                               {% for n in nchoices %}
                                
-                              <!--) is special case as text is not a numeral--> 
-                                {% if n == 0 %} 
+                              <!--skip first value as zero not used--> 
+                              {% if n != 0 %}
                                   <td>
-                                  
-                                    <input name= {{a_question.id}} type="radio" value={{ n }}  id={{ n }} required="required" /><lable> Not Sure</lable>
-                              
-                                  </td>
-                                  {% else %}
-                                  <td>
-                                  
-                                  <input name={{a_question.id}} type="radio" value={{ n }}  id={{ n }} required="required" /><lable> {{n}}</lable>
+                                      <input name={{a_question.id}} type="radio" value={{ n }}  id={{ n }} required="required" /><lable> {{n}}</lable>
                                   </td>
                                   {% endif %}
                               {% endfor %}
