@@ -395,7 +395,7 @@ li.header {
   cursor: pointer;
 }
 
-li:hover {
+li.header:hover {
   background-color: #160287;
 }
 
