@@ -249,7 +249,7 @@ def user_logout(request):
     if request.method == 'POST':
         if request.user.is_authenticated:
             logout(request)
-    return render(request,'ISO22301/goodbye.html',)
+    return render(request,'ISO22301/logout.html',)
 
 def radarplot(area_and_overall_colors,survey,user_id,company,project):
 

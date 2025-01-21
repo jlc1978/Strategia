@@ -125,7 +125,7 @@ STATIC_URL = 'static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 
-LOGOUT_REDIRECT_URL = "ISO22301:goodbye"
+LOGOUT_REDIRECT_URL = "ISO22301:logout"
 LOGIN_REDIRECT_URL = "ISO22301:login"
 
 # Default primary key field type

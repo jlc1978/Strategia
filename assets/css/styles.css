@@ -301,9 +301,9 @@ th, td {
   .container {
     display: flex;
     flex-direction: row;
-    width:100vw;
+    width:98vw;
     align-items: top;
-    justify-content: space-between;
+    justify-content: center;
     margin-bottom: 1vh;
     border-spacing: 1vw 1vh;
 
@@ -335,10 +335,10 @@ th, td {
 
 .row {
   display: flex;
-  justify-content: space-between;
-  margin-left:1vw;
-  margin-right: .5vw;
-  gap: .6vw;
+  justify-content: center;
+
+  margin-right: 1vw;
+  gap: .8vw;
 
 
 }
@@ -373,3 +373,29 @@ td.bold {
   text-align: center;
   font-weight: bold;
 }
+
+/* Format for header buttons */
+ul {
+  list-style-type: none;
+  margin: 5px;
+  padding: 0;
+  overflow: hidden;
+}
+
+li.header {
+  float: right;
+  display: block;
+  padding: 10px;
+  width: 60px;
+  margin: 5px;
+  background-color: blue;
+  color: white;
+  border-radius: 6px;
+  text-align: center;
+  cursor: pointer;
+}
+
+li:hover {
+  background-color: #160287;
+}
+

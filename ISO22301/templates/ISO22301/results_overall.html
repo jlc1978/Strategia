@@ -18,9 +18,12 @@
     </style>
     <title>{{ browsertab }}</title>
   </head>
-    <body>
-<div class = 'containerprint'>
-<table class = 'container'>
+  <ul>
+    <li class='header'><headerbutton onclick="window.print()">Print</button></li>
+    <li class='header'><headerbutton input type='button' name=Begin Survey onclick="location.href='{% url 'logout' %}'"><lable>Logout</lable></button></li>
+    </ul>
+
+  <table class = 'container'>
   <tbody>
 
     <tr>
@@ -406,7 +409,4 @@ option2 && myChart2.setOption(option2);
         </div>
     </div>
   </body>
-<div>
-  <button onclick="window.print()">Print this page</button>
-</div>
 </html>
