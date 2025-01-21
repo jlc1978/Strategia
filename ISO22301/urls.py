@@ -8,7 +8,6 @@ urlpatterns = [
    # path("survey/", views.survey, name="survey"),
     path("results/<str:id>", views.results, name="results"),
     path('login/', views.user_login, name='login'),
-    path('generic/', views.generic, name='generic'),
     path('introduction<str:id>', views.introduction, name='introduction'),
     path('logout/', views.user_logout, name='logout'),
     path('wheel/', views.wheel, name='wheel'),
