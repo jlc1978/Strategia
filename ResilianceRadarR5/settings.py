@@ -125,9 +125,9 @@ STATIC_URL = 'static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 
-LOGIN_REDIRECT_URL = "ISO22301:login"
+LOGIN_REDIRECT_URL = "/ISO22301/login"
 
-LOGOUT_REDIRECT_URL = "ISO22301:logout"
+LOGOUT_REDIRECT_URL = "/ISO22301/logout"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

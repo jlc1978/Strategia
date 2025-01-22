@@ -17,12 +17,13 @@
   }
     </style>
     <title>{{ browsertab }}</title>
-  </head>
-  <ul>
-    <li class='header'><headerbutton onclick="window.print()">Print</button></li>
-    <li class='header'><headerbutton input type='button' name=Begin Survey onclick="location.href='{% url 'logout' %}'"><lable>Logout</lable></button></li>
-    </ul>
 
+    <form action="{% url 'logout' %}" method="POST">
+      {% csrf_token %} 
+      <button class='button1' type='submit'>Logout</button>
+      </form>
+      <li> <button class='button2' onclick="window.print()">Print</button></li>
+    </head>
   <table class = 'container'>
   <tbody>
 

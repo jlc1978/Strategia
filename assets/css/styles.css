@@ -256,7 +256,7 @@ th, td {
     background-color: #160287;
   }
   button {
-    position: absolute;
+    position: relative;
     left: 50vw;
     transform: translateX(-50%);
     height: 5vh;
@@ -374,28 +374,76 @@ td.bold {
   font-weight: bold;
 }
 
-/* Format for header buttons */
-ul {
-  list-style-type: none;
-  margin: 5px;
-  padding: 0;
-  overflow: hidden;
+/* Change message style formating */
+
+.messages {
+  list-style: none;
 }
 
-li.header {
-  float: right;
-  display: block;
-  padding: 10px;
-  width: 60px;
-  margin: 5px;
-  background-color: blue;
-  color: white;
-  border-radius: 6px;
+.messages li {
+  width: 15vw;
+  line-height: 1vw;
+}
+
+.messages li.info, .messages li.debug {
+  background-color: #d0ebff;
+}
+
+.messages li.success {
+  background-color: #b2f2bb;
+}
+
+.message li.warning {
+  background-color: #ffec99;
+}
+
+.messages li.error {
+  background-color: #ffe3e3;
+}
+
+.messages li.alert {
+  background-color: lightgray;
+  /* Align to center of page*/
+  margin-left: auto; 
+  margin-right: auto;
+  /* Set box size and shape*/
+  height: 2vh;
+  width: 20vw;
   text-align: center;
-  cursor: pointer;
+  font-size: 2vh;
+  padding: .5vh;
+  border-radius: 10px;
 }
 
-li.header:hover {
+/* Create button group to put buttons on top of page in results_overall */
+ 
+button.button1 {
+  background:blue;
+  color:white;
+  position: absolute; 
+  top: 1vh; 
+  left: 84vw;
+  height: 3vh;
+  width: 5vw;
+  font-size: 1.5vh;
+}
+
+button.button2 {
+  background:blue;
+  color:white;
+  position: absolute; 
+  top: 1vh; 
+  left: 90vw;
+  height: 3vh;
+  width: 5vw;
+  font-size: 1.5vh;
+}
+
+/* Add a background color on hover */
+button.button1:hover {
   background-color: #160287;
 }
 
+button.button2:hover {
+  background-color: #160287;
+}

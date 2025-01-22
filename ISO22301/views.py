@@ -8,7 +8,7 @@ import datetime
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
-@login_required
+@login_required(login_url='login')
 def introduction(request,id): #id is the chsend survey's svg pth to be used to include outcome color
     current_path=id #get id in forma#path_xx where xx is survey
     context_path={
@@ -33,7 +33,7 @@ def introduction(request,id): #id is the chsend survey's svg pth to be used to i
     context = context | context_survey #add current path and text to context
     return render(request, "ISO22301/introduction.html",context)
 
-@login_required
+@login_required(login_url='login')
 def results(request,id):
     user_id=request.user.id #Get current user
     group=request.user.groups.all()# Get company for user logged in
@@ -121,7 +121,7 @@ def results(request,id):
         return render(request, "ISO22301/survey.html",context)
 
 
-@login_required
+@login_required(login_url='login')
 def wheel(request):
     return render(request,'ISO22301/wheel.html')
 
@@ -236,16 +236,16 @@ def user_login(request):
                 login(request, user)   
                 return redirect('wheel')
             else:
-                return redirect('login')
+                form = LoginForm()
+                messages.error(request,'Please enter a valid username and password')
+                return render(request,'ISO22301/login.html', {'form': form})
     else:
         form = LoginForm()
     return render(request,'ISO22301/login.html', {'form': form},)
 
-@login_required
+@login_required(login_url='login')
 def user_logout(request):
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            logout(request)
+    logout(request)
     return render(request,'ISO22301/logout.html',)
 
 def radarplot(area_and_overall_colors,survey,user_id,company,project):
@@ -284,7 +284,7 @@ def radarplot(area_and_overall_colors,survey,user_id,company,project):
 
     return area_name, area_scores, max_scores
 
-@login_required
+@login_required(login_url='login')
 def results_overall(request):
     #Generate 3 results graphs
     user_id=request.user.id #get current user to identify data to use
