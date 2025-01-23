@@ -36,11 +36,18 @@ th, td {
   table{
     width: 90vw;
     margin-bottom: 0px;
+
+  }
+  table.final{
+    width: 90vw;
+    margin-bottom: 0px;
+    border-collapse: collapse;
   }
 
   table.center {
     margin-left: auto; 
     margin-right: auto;
+    border-collapse: collapse;
   }
   
   h1 {
@@ -339,8 +346,16 @@ th, td {
 
   margin-right: 1vw;
   gap: .8vw;
+}
 
-
+/* Table dv with grey border */
+td.ng {
+  border: 1px solid;
+  border-color: black lightgrey;
+  font-size: 2vh;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
 }
 
 /* Table with no borders */
@@ -446,4 +461,11 @@ button.button1:hover {
 
 button.button2:hover {
   background-color: #160287;
+}
+
+/* Inserting this collapsed row between two flex items will make 
+ * the flex item that comes after it break to a new row */
+ .break {
+  flex-basis: 100%;
+  height: 0;
 }

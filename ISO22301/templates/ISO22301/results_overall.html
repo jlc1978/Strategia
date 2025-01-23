@@ -11,10 +11,12 @@
         orientation: landscape;
         margin: 20mm;
     }
-    .containerprint {
-      width: 60%;
-      padding: 20mm;
-  }
+      @media print {
+        margin:0;
+        .container {
+          display: inline;
+        }
+      }
     </style>
     <title>{{ browsertab }}</title>
 
@@ -342,7 +344,7 @@ option2 && myChart2.setOption(option2);
 
 <div class="row">
   <div class="column">
-<table style ='width:29.5vw'>
+<table class = 'final' style ='width:29.5vw'>
         {% for text in table_header %}
         <tr>
         <td class = 'areabold'>
@@ -365,7 +367,7 @@ option2 && myChart2.setOption(option2);
 </div>
     <div class="column">
 
-      <table style ='width:29.5vw'>
+      <table class = 'final' style ='width:29.5vw'>
 
         {% for text in table_header %}
         <tr>
@@ -387,7 +389,7 @@ option2 && myChart2.setOption(option2);
         </table>
       </div>
       <div class="column">
-        <table style ='width:29.5vw'>
+        <table class = 'final' style ='width:29.5vw'>
 
           {% for text in table_header %}
           <tr>

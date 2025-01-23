@@ -12,5 +12,5 @@ urlpatterns = [
     path('introduction<str:id>', views.introduction, name='introduction'),
     path('logout/', views.user_logout, name='logout'),
     path('wheel/', views.wheel, name='wheel'),
-    path('results_overall/', views.results_overall, name='results_overall',)
+    path('results_overall/', views.results_overall, name='results_overall'),
 ]
