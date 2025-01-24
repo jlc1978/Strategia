@@ -20,11 +20,12 @@
     </style>
     <title>{{ browsertab }}</title>
 
+
     <form action="{% url 'logout' %}" method="POST">
       {% csrf_token %} 
       <button class='button1' type='submit'>Logout</button>
       </form>
-      <li> <button class='button2' onclick="window.print()">Print</button></li>
+      <button class='button2' onclick="window.print()">Print</button></li>
     </head>
   <table class = 'container'>
   <tbody>
@@ -344,7 +345,7 @@ option2 && myChart2.setOption(option2);
 
 <div class="row">
   <div class="column">
-<table class = 'final' style ='width:29.5vw'>
+<table class = 'final' style ='width:29.4vw'>
         {% for text in table_header %}
         <tr>
         <td class = 'areabold'>
@@ -367,7 +368,7 @@ option2 && myChart2.setOption(option2);
 </div>
     <div class="column">
 
-      <table class = 'final' style ='width:29.5vw'>
+      <table class = 'final' style ='width:29.4vw'>
 
         {% for text in table_header %}
         <tr>
@@ -389,7 +390,7 @@ option2 && myChart2.setOption(option2);
         </table>
       </div>
       <div class="column">
-        <table class = 'final' style ='width:29.5vw'>
+        <table class = 'final' style ='width:29.4vw'>
 
           {% for text in table_header %}
           <tr>

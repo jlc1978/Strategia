@@ -317,7 +317,7 @@ th, td {
   }
 
   td.drilldown{
-    width: 28vw;
+    width: 28.1vw;
     height: 28vh;
     border-radius: 20px;
   }
@@ -343,7 +343,7 @@ th, td {
 .row {
   display: flex;
   justify-content: center;
-
+  
   margin-right: 1vw;
   gap: .8vw;
 }
