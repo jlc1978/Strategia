@@ -25,6 +25,7 @@
           <tr>
 <!--Create column headers-->
             {% for header in columnheader%}
+
               <th>{{ header }}</th>
             {% endfor %}
 
@@ -45,7 +46,7 @@
                           <td class="question">{{ a_question.question }}</td>
                               {% for n in nchoices %}
                                
-                              <!--skip first value as zero not sure radio button (Removed code for Zero button here and saved to snippet)--> 
+                              <!--skip first value as zero 'not sure' no longer valid radio button (Removed code for Zero button here and saved to snippet)--> 
                               {% if n != 0 %}
                                   <td>
                                       <input name={{a_question.id}} type="radio" value={{ n }}  id={{ n }} required="required" /><lable> {{n}}</lable>
