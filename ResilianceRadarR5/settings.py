@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+import openai
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,6 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-@6st=!b11^42^bg5**7q%gmjiz0()m*59#b)5t)#fu4x_d45lj'
+
+# OPENAI Key
+
+OPENAI_API_KEY = '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'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
