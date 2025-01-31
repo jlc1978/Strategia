@@ -13,4 +13,5 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('wheel/', views.wheel, name='wheel'),
     path('results_overall/', views.results_overall, name='results_overall'),
+   # path('chatgpt_analysis/', views.chatgpt_analysis, name="ChatGPT",)
 ]

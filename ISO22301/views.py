@@ -6,6 +6,10 @@ from .forms import  LoginForm, LogoutForm
 from django.contrib import messages
 import datetime
 from django.contrib.auth.decorators import login_required
+import openai
+import json
+
+OPENAI_API_KEY = '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'
 
 # Create your views here.
 @login_required(login_url='login')
@@ -346,7 +350,7 @@ def results_overall(request):
     #results_text1 = results_text1 + table_header
     #results_text2 = results_text2 + table_header
     #results_text3 = results_text3 + table_header
-
+    analysis = chatgpt_analysis(user_id)
     context = {
         'area_name1': survey_results_area1,
         'area_scores1': survey_results_scores1,
@@ -364,8 +368,29 @@ def results_overall(request):
         'results_text2': results_text2,
         'results_text3': results_text3,
         'table_header': table_header,
+        'analysis': analysis,
 
 
 
         }
     return render(request,'ISO22301/results_overall.html', context)
+
+def chatgpt_analysis(user_id): #Send data to analyze_results to get ChatGPT analaysis
+    results_dict={} #create dictionary of results
+    results_dict=Final_Result.objects.filter(user_id = user_id).values_list('area', 'scores')
+    analysis = analyze_results(results_dict)
+    return analysis
+
+def analyze_results(results_dict): # Use Chat GPT to summarize results
+    #prompt = f"provide a one paragraph summary of the results, a one paragraph summary of the key strengths and a one paragraph summary of the key weaknesses for  ISO survey results: {results_dict}" #Set prompt from user
+    #Pass data and prompt to chatGPT
+    client = openai.OpenAI(api_key=OPENAI_API_KEY)
+    prompt = f"provide a one paragraph summary of the results,a one paragraph summary of key strengths, and a  one paragraph summary of key weaknesses  based on ISO survey results: Please return your answer as a bulleted html list with <br></br> bewteen each bulleted list items {results_dict}"
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",  # or "gpt-3.5-turbo"
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=1000
+    )
+    results = response.choices[0].message.content # Get results
+    
+    return results
