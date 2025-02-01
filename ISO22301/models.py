@@ -194,3 +194,19 @@ class Respondent(models.Model):
 
     def __str__(self):
         return f"Respondent {self.respondent} Company {self.company}"
+    
+class Final_Result_Question(models.Model):
+    user_id = models.IntegerField(null = True, blank=False)
+    area = models.CharField(max_length=300)
+    question = models.CharField(max_length=250, null = True)
+    scores = models.DecimalField(max_digits=2, decimal_places=1)
+    max_scores=models.IntegerField(blank = True)
+    survey = models.IntegerField(blank = True)
+    company = models.CharField(max_length=250, null = True)
+    area_id = models.IntegerField(null = True, blank=False)
+    survey_name = models.CharField(max_length=40, null = True)
+    respondent = models.CharField(max_length=250, null = True)
+
+    def __str__(self):
+        return f"{self.user_id} {self.respondent} company {self.company} survey {self.survey} area {self.area} score {self.scores} max {self.max_scores} "
+    

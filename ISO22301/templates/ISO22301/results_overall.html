@@ -404,8 +404,7 @@ option2 && myChart2.setOption(option2);
 
            {% for text in results_text2 reversed %}
            <tr>
-           <td class = 'area'>
-            {{text.0}} </td>
+           <td class = 'area'>{{text.0}} </td>
            <td>{{text.2}}</td>
            <td>{{text.1}}</td>
            </tr>
@@ -413,6 +412,10 @@ option2 && myChart2.setOption(option2);
           </table>
         </div>
     </div>
-    {{ analysis|safe }}
+   <br></br>
+    <table class = 'chatgpt'>
+    <tr><td class = 'chatgpt'>{{ analysis|safe }}</td></tr>
+    </table>
   </body>
 </html>
+ 

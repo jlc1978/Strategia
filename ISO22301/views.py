@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Answer, Comment, Question, Area, Topic, Area_Header, Column_Header, Dashboard, Project, Area_Topic,Outcome_Colors, Surveys, Introduction, Final_Result,Respondent
+from .models import Answer, Comment, Question, Area, Topic, Area_Header, Column_Header, Dashboard, Project, Area_Topic,Outcome_Colors, Surveys, Introduction, Final_Result,Respondent, Final_Result_Question
 from collections import defaultdict, Counter
 from django.contrib.auth import authenticate, login, logout 
 from .forms import  LoginForm, LogoutForm
@@ -53,6 +53,8 @@ def results(request,id):
     }
     create_context=createheader(0,id) #pass starting values to use to extract desired text, get tuple
     survey = create_context[2] #get id of current survey from unction create_context as integer
+    survey_text = Surveys.objects.filter(id=survey).values_list('survey', flat=True) #Get name of survey
+    area_text = Question.objects.filter(survey_id=survey).values_list('area_id__area', flat=True)#Get text names for area by getting it via pk aread_id__area using __ to gt value ratehr than pk
 
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
     context = context | context_path # merge context values
@@ -74,7 +76,7 @@ def results(request,id):
         answers_values.pop(0)# remove token
         answers_values_int=[eval(i) for i in answers_values] #ietrate to create list
         questionareas_area_id = Question.objects.filter(survey_id = survey).values_list('area_id', flat=True) # get area names, Flat retuns just the text list of areas
-
+        questions_text = Question.objects.filter(survey_id = survey).values_list('question', flat=True) # Get question text for final result table
         #user_id=request.user.id
         Comment.objects.create(comments = results_comments, user_id = user_id, company = company, username=user_name, survey_id=survey)
        # entry_time = datetime.datetime.now() #set time for data entry
@@ -83,6 +85,18 @@ def results(request,id):
 
             Answer.objects.create(question_id = keys_values_int[i],value = answers_values_int[i], area_id = questionareas_area_id[i], user_id=user_id, company=company, username=user_name)
         #results= Answer.objects.filter(respondent=respondent_id).values_list('area_id','value').order_by('-id')[:19] # get last 19 values for respondent to get current answers
+
+        # Create list of final answers for analysis
+        
+        user = Final_Result_Question.objects.filter(user_id=user_id,survey = survey) #get QuerySet for user to see if data already exists
+        if not user: # if no data exists in Final_Results create data entry
+            for j in range(len(keys_values)):#fill in answers to SQL table
+                Final_Result_Question.objects.create(area = area_text[j],question = questions_text[j],scores = answers_values_int[j], max_scores = 5, area_id = questionareas_area_id[j], user_id=user_id, company=company, respondent=user_name, survey=survey,survey_name=survey_text)
+ 
+            else: #If data exists update to latets answers from user
+                for i in range(len(keys_values)):#fill in answers to SQL table
+                   Final_Result_Question.objects.filter(user_id = user_id,survey=survey,area = questionareas_area_id[j]).update(scores = answers_values_int[j])
+
 
         choices = create_context[1] #get list of choices to pass from create_context
         divcontext = Area.objects.values_list('divcontext', flat=True) #Get the divcontext values for each item in the results to align color with boxes
@@ -203,7 +217,7 @@ def determine_score(area, values, choices):
         area_scores.append(round(average_score * max_score,1)) # Create list of average scores for radar plot, convert to 0 to 5 scale, rounded to 1 decimal place
     score_ave_overall = aggregate_score / (area_total * max_score) # number of questions time max value of each question converted to 0 -1 scale
     overall_color = score_color_overall(score_ave_overall)
-    print(choices, max_score,score,area_scores, score_ave_overall )
+
     return score_result, overall_color, area_scores, max_score
     
 def score_color(score): #Determine what color to shade scored area
@@ -252,7 +266,7 @@ def user_logout(request):
     logout(request)
     return render(request,'ISO22301/logout.html',)
 
-def radarplot(area_and_overall_colors,survey,user_id,company,project):
+def radarplot(area_and_overall_colors,survey,user_id,company,project): #Create final radar plot
 
     #create data and names for radar plot to display in clockwise order
     area_scores = list(area_and_overall_colors[2]) # get scores for context for radar plot, convert to list to allow JSON to work properly
@@ -286,7 +300,7 @@ def radarplot(area_and_overall_colors,survey,user_id,company,project):
        for x in range(n):
             data=Final_Result.objects.filter(user_id = user_id,survey=survey,area = area_name[x]).update(scores = area_scores[x],area_color = area_colors[x], overall_color = overall_color)
 
-    return area_name, area_scores, max_scores
+       return area_name, area_scores, max_scores
 
 @login_required(login_url='login')
 def results_overall(request):
@@ -350,7 +364,15 @@ def results_overall(request):
     #results_text1 = results_text1 + table_header
     #results_text2 = results_text2 + table_header
     #results_text3 = results_text3 + table_header
-    analysis = chatgpt_analysis(user_id)
+    analysis_raw= chatgpt_analysis(user_id) #Get analysis results
+    print("RAW:", analysis_raw)
+    analysis_raw1=analysis_raw.replace("**","")
+    analysis_raw2=analysis_raw1.replace("Key Strengths","<strong>Key Strengths: </strong>")
+    analysis_raw3=analysis_raw2.replace("Summary of Results","<strong>Overall Results: </strong>")
+    analysis_raw4=analysis_raw3.replace("Summary of","")
+    analysis=analysis_raw4.replace("Key Weaknesses","<strong>Key Weaknesses: </strong>")
+
+    print(analysis)
     context = {
         'area_name1': survey_results_area1,
         'area_scores1': survey_results_scores1,
@@ -377,7 +399,8 @@ def results_overall(request):
 
 def chatgpt_analysis(user_id): #Send data to analyze_results to get ChatGPT analaysis
     results_dict={} #create dictionary of results
-    results_dict=Final_Result.objects.filter(user_id = user_id).values_list('area', 'scores')
+    results_dict=Final_Result_Question.objects.filter(user_id = user_id).values_list('area','question', 'scores')
+
     analysis = analyze_results(results_dict)
     return analysis
 
@@ -385,11 +408,11 @@ def analyze_results(results_dict): # Use Chat GPT to summarize results
     #prompt = f"provide a one paragraph summary of the results, a one paragraph summary of the key strengths and a one paragraph summary of the key weaknesses for  ISO survey results: {results_dict}" #Set prompt from user
     #Pass data and prompt to chatGPT
     client = openai.OpenAI(api_key=OPENAI_API_KEY)
-    prompt = f"provide a one paragraph summary of the results,a one paragraph summary of key strengths, and a  one paragraph summary of key weaknesses  based on ISO survey results: Please return your answer as a bulleted html list with <br></br> bewteen each bulleted list items {results_dict}"
+    prompt = f"provide a two paragraph summary of the results,a two paragraph summary  of key strengths, and a  two paragraph summary summary of key weaknesses  based on ISO survey results where the maximum possible score is 5: Please return your answer with <br></br> bewteen each summary items, bold the title {results_dict}"
     response = client.chat.completions.create(
         model="gpt-4o-mini",  # or "gpt-3.5-turbo"
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=1000
+        max_tokens=2000
     )
     results = response.choices[0].message.content # Get results
     

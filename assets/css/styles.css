@@ -41,6 +41,8 @@ th, td {
   table.final{
     width: 90vw;
     margin-bottom: 0px;
+    font-size: 14px;
+    height:20px;
     border-collapse: collapse;
   }
 
@@ -318,13 +320,25 @@ th, td {
 
   td.drilldown{
     width: 28.1vw;
-    height: 28vh;
+    height: 20vh;
     border-radius: 20px;
   }
 
+  /* Set style for results table in final results*/
   td.area {
     text-align: left;
     width: 50vw;
+  }
+
+  /* Ste Style for summary of results by CHAR GPT*/
+
+  table.chatgpt {
+    margin-left: auto; 
+    margin-right: auto;
+  }
+  td.chatgpt {
+    border:none;
+    text-align: left;
   }
 
   /* container for results page */
