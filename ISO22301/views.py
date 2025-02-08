@@ -66,16 +66,20 @@ def results(request,id):
     if request.method == "POST":                         
         keys_values=list(request.POST.keys()) #extract keys = questions are keys
         answers_values=list(request.POST.values())
-        results_comments = answers_values.pop() #  Get comments from list
+   
+        #results_comments = answers_values.pop() #  Get comments from list need to uncomment when commnets added back to template
         keys_values.pop(0)# remove token so not part of list of values
         keys_values.pop() # remove comments so not part of list of values
+
         keys_values_int=[eval(i) for i in keys_values]
         answers_values.pop(0)# remove token
+
         answers_values_int=[eval(i) for i in answers_values] #ietrate to create list
+
         questionareas_area_id = Question.objects.filter(survey_id = survey).values_list('area_id', flat=True) # get area names, Flat retuns just the text list of areas
         questions_text = Question.objects.filter(survey_id = survey).values_list('question', flat=True) # Get question text for final result table
         #user_id=request.user.id
-        Comment.objects.create(comments = results_comments, user_id = user_id, company = company, username=user_name, survey_id=survey)
+        #Comment.objects.create(comments = results_comments, user_id = user_id, company = company, username=user_name, survey_id=survey) # Add back in when comments added in
        # entry_time = datetime.datetime.now() #set time for data entry
    
         for i in range(len(keys_values)):#fill in answers to SQL table
@@ -113,7 +117,7 @@ def results(request,id):
        # Context for flow digram
         context_results ={
             "respondent_id": user_name,
-            "comment": results_comments,
+            #"comment": results_comments, #Add in when comments added back
             "divcontext_colors_zip": divcontext_colors_zip, #new
             "overallcolor": overall_color, # new
         }
@@ -192,7 +196,7 @@ def createheader(n,id): # n is the value to use in lists created here, refers to
 
 
 def determine_score(area, values, choices): 
-
+ 
     area_frequency = list(Counter(area).values()) # count frequency of questions in each areas convereted to list to 
     # be used to determine how often to iterate each area when determining the area's score
     area_total = sum(area_frequency) # get total number of questions
@@ -207,7 +211,9 @@ def determine_score(area, values, choices):
         score = 0
         ai = start+area_frequency[n] # return number of question in each area and add to strat to get number of loops
         for x in range(start,ai):
+
             score+=values[x] #sume questions choices for area
+
        
         aggregate_score+=score # increment score by teh question results
         average_score = score / (area_frequency[n] * max_score)
