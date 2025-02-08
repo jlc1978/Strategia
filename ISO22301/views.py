@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Answer, Comment, Question, Area, Topic, Area_Header, Column_Header, Dashboard, Project, Area_Topic,Outcome_Colors, Surveys, Introduction, Final_Result,Respondent, Final_Result_Question
+from .models import Answer, Comment, Question, Area, Analysis_Final, Area_Header, Column_Header, Dashboard, Project, Area_Topic,Outcome_Colors, Surveys, Introduction, Final_Result,Respondent, Final_Result_Question
 from collections import defaultdict, Counter
 from django.contrib.auth import authenticate, login, logout 
 from .forms import  LoginForm, LogoutForm
@@ -23,15 +23,12 @@ def introduction(request,id): #id is the chsend survey's svg pth to be used to i
     context = create_context[0] #get context to pass n is the value to use in lists, convert tuple to dict
     context = context | context_path #add current path to context
     survey_id=Surveys.objects.filter(context=id).values_list("id", flat=True) #Get survey id for path
-    survey_title_list=list(Surveys.objects.filter(context=id).values_list("survey", flat=True))#Get survey title and convert Query Set to list for path
-    survey_title=survey_title_list[0]#Get text from list as flat text file for use in HTML rendering by reemoving [' '] from text
     survey_id_int=survey_id.first() #extract integer value
     intro_text_list=list(Introduction.objects.filter(survey_id =  survey_id_int).values_list('intro', flat=True)) #Get survey titleintro text and convert Query Set to list for path
     intro_text=intro_text_list[0]#Get text from list as flat text file for use in HTML rendering by reemoving [' '] from text
     context_survey={
         'current_path': current_path,
         'intro_text': intro_text,
-        'survey_title': survey_title,
     } # pass survey specific path, title and text for introduction 
 
     context = context | context_survey #add current path and text to context
@@ -146,6 +143,8 @@ def wheel(request):
 
 def createheader(n,id): # n is the value to use in lists created here, refers to teh ISO being generated Id is survey
     survey_id=Surveys.objects.filter(context=id).values_list("id", flat=True) #Get survey id for path
+    survey_title_list=list(Surveys.objects.filter(context=id).values_list("survey", flat=True)) #Getlist of surveys
+    survey_title=survey_title_list[0]#Get text from list as flat text file for use in HTML rendering by reemoving [' '] from text
     survey_id_int=survey_id.first() #extract integer value
     #Name of browser tab
     browsertab=list(Dashboard.objects.values_list('company', flat=True))
@@ -187,6 +186,7 @@ def createheader(n,id): # n is the value to use in lists created here, refers to
         "outcometext": outcometext,
         "nchoices": nchoices,
         "columnheader": column_header,
+        "surveytitle": survey_title
         }
     return context_header, nchoices, survey_id_int, project
 
@@ -202,10 +202,10 @@ def determine_score(area, values, choices):
     score_result = []
     max_score = choices.pop() # remove "Not Sure" zero value from calculation of max score
     start=0 #set start location of loop
+
     for n in range(num_areas): #loop through all areas to create list of values and compute score
         score = 0
         ai = start+area_frequency[n] # return number of question in each area and add to strat to get number of loops
-  
         for x in range(start,ai):
             score+=values[x] #sume questions choices for area
        
@@ -300,7 +300,7 @@ def radarplot(area_and_overall_colors,survey,user_id,company,project): #Create f
        for x in range(n):
             data=Final_Result.objects.filter(user_id = user_id,survey=survey,area = area_name[x]).update(scores = area_scores[x],area_color = area_colors[x], overall_color = overall_color)
 
-       return area_name, area_scores, max_scores
+    return area_name, area_scores, max_scores
 
 @login_required(login_url='login')
 def results_overall(request):
@@ -365,14 +365,13 @@ def results_overall(request):
     #results_text2 = results_text2 + table_header
     #results_text3 = results_text3 + table_header
     analysis_raw= chatgpt_analysis(user_id) #Get analysis results
-    print("RAW:", analysis_raw)
     analysis_raw1=analysis_raw.replace("**","")
-    analysis_raw2=analysis_raw1.replace("Key Strengths","<strong>Key Strengths: </strong>")
+    analysis_raw2=analysis_raw1.replace("Key Strengths","<strong>Relative Strengths: </strong>")
     analysis_raw3=analysis_raw2.replace("Summary of Results","<strong>Overall Results: </strong>")
     analysis_raw4=analysis_raw3.replace("Summary of","")
-    analysis=analysis_raw4.replace("Key Weaknesses","<strong>Key Weaknesses: </strong>")
-
-    print(analysis)
+    analysis=analysis_raw4.replace("Key Weaknesses","<strong>Relative Weaknesses: </strong>")
+    analysis_data = Analysis_Final(user_id = user_id, analysis = analysis)
+    analysis_data.save()
     context = {
         'area_name1': survey_results_area1,
         'area_scores1': survey_results_scores1,
@@ -408,7 +407,7 @@ def analyze_results(results_dict): # Use Chat GPT to summarize results
     #prompt = f"provide a one paragraph summary of the results, a one paragraph summary of the key strengths and a one paragraph summary of the key weaknesses for  ISO survey results: {results_dict}" #Set prompt from user
     #Pass data and prompt to chatGPT
     client = openai.OpenAI(api_key=OPENAI_API_KEY)
-    prompt = f"provide a two paragraph summary of the results,a two paragraph summary  of key strengths, and a  two paragraph summary summary of key weaknesses  based on ISO survey results where the maximum possible score is 5: Please return your answer with <br></br> bewteen each summary items, bold the title {results_dict}"
+    prompt = f"provide a two paragraph summary of the results,a two paragraph summary  of key strengths, and a  two paragraph summary summary of key weaknesses  based on ISO survey results where the maximum possible score is 5: Please return your answer with <br></br> bewteen each summary items, bold the title Do not use the words ISO, survey, proactively, or proactive{results_dict}"
     response = client.chat.completions.create(
         model="gpt-4o-mini",  # or "gpt-3.5-turbo"
         messages=[{"role": "user", "content": prompt}],

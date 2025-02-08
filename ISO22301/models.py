@@ -24,7 +24,7 @@ class Area(models.Model):
 
 
     def __str__(self):
-        return f"{self.area} Purpose: {self.areatext}"
+        return f"{self.survey} -  {self.area} Purpose: {self.areatext}"
 
 class Area_Topic(models.Model):
     areatopic = models.CharField(max_length=400)
@@ -88,23 +88,13 @@ class Project(models.Model):
 
 
 
-class Topic(models.Model):
-    topic = models.CharField(max_length=30)
-    area = models.ForeignKey(
-        Area, on_delete=models.CASCADE, null=True
-    )
 
-    def __str__(self):
-        return f"{self.topic}"
 
 
 class Question(models.Model):
     question = models.CharField(max_length=200)
     survey = models.ForeignKey(
         Surveys, on_delete=models.CASCADE, null=True
-    )
-    topic = models.ForeignKey(
-        Topic, on_delete=models.CASCADE, null=True
     )
     area = models.ForeignKey(
         Area, on_delete=models.CASCADE, null=True
@@ -210,3 +200,9 @@ class Final_Result_Question(models.Model):
     def __str__(self):
         return f"{self.user_id} {self.respondent} company {self.company} survey {self.survey} area {self.area} score {self.scores} max {self.max_scores} "
     
+class Analysis_Final(models.Model):
+    analysis = models.CharField(max_length=3000, blank=True)
+    user_id = models.IntegerField(null = True, blank=False)
+
+    def __str__(self):
+        return f"{self.user_id} {self.analysis}"
