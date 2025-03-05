@@ -413,7 +413,7 @@ def analyze_results(results_dict): # Use Chat GPT to summarize results
     #prompt = f"provide a one paragraph summary of the results, a one paragraph summary of the key strengths and a one paragraph summary of the key weaknesses for  ISO survey results: {results_dict}" #Set prompt from user
     #Pass data and prompt to chatGPT
     client = openai.OpenAI(api_key=OPENAI_API_KEY)
-    prompt = f"provide a two paragraph summary of the results,a two paragraph summary  of key strengths, and a  two paragraph summary summary of key weaknesses  based on ISO survey results where the maximum possible score is 5: Please return your answer with <br></br> bewteen each summary items, bold the title Do not use the words ISO, survey, proactively, or proactive{results_dict}"
+    prompt = f"provide a two paragraph summary of the results,a two paragraph summary  of key strengths, and a  two paragraph summary summary of key weaknesses  based on ISO survey results where the maximum possible score is 5: Please return your answer with <br></br> bewteen each summary items, bold the title Do not use the words ISO, survey, proactively, or proactive, do not give score values in output{results_dict}"
     response = client.chat.completions.create(
         model="gpt-4o-mini",  # or "gpt-3.5-turbo"
         messages=[{"role": "user", "content": prompt}],
