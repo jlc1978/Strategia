@@ -1,2 +1,2 @@
 erelease: python manage.py migrate
-web: gunicorn ResilianceRadarR5.wsgi
+web: gunicorn ESGSurvey.wsgi

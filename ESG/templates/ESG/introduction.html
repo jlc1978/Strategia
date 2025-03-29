@@ -1,0 +1,14 @@
+{% extends "ESG/layout.html" %}
+
+{% block content %}
+<style>
+</style>
+{% csrf_token %}
+<h1>{{ surveytitle }}</h1>
+<div class=t4>
+
+<!-- Use text in Introduction in DB for text in HTML Page-->
+{{ intro_text|safe}}
+</div>
+<button input type='button' name=Begin Survey onclick="location.href='{% url 'results' id=current_path %}'"><lable>Begin Survey</lable></button>
+{% endblock %}
