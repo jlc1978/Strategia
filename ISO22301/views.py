@@ -66,10 +66,10 @@ def results(request,id):
     if request.method == "POST":                         
         keys_values=list(request.POST.keys()) #extract keys = questions are keys
         answers_values=list(request.POST.values())
-   
+
         #results_comments = answers_values.pop() #  Get comments from list need to uncomment when commnets added back to template
         keys_values.pop(0)# remove token so not part of list of values
-        keys_values.pop() # remove comments so not part of list of values
+        '''keys_values.pop() # remove comments so not part of list of values''' # Comment text box delted from survey
 
         keys_values_int=[eval(i) for i in keys_values]
         answers_values.pop(0)# remove token
@@ -94,10 +94,14 @@ def results(request,id):
             for j in range(len(keys_values)):#fill in answers to SQL table
                 Final_Result_Question.objects.create(area = area_text[j],question = questions_text[j],scores = answers_values_int[j], max_scores = 5, area_id = questionareas_area_id[j], user_id=user_id, company=company, respondent=user_name, survey=survey,survey_name=survey_text)
  
-            else: #If data exists update to latets answers from user
-                for i in range(len(keys_values)):#fill in answers to SQL table
-                   Final_Result_Question.objects.filter(user_id = user_id,survey=survey,area = questionareas_area_id[j]).update(scores = answers_values_int[j])
-
+        else: #If data exists update to latets answers from user
+            '''            print("Loading Final answers)")
+            print(keys_values)
+            print(questionareas_area_id)'''
+            for i in range(len(keys_values)):#fill in answers to SQL table
+                Final_Result_Question.objects.filter(user_id = user_id,survey=survey,area = questionareas_area_id[i]).update(scores = answers_values_int[i])
+                scores = answers_values_int[i]
+                print('Score',scores)
 
         choices = create_context[1] #get list of choices to pass from create_context
         divcontext = Area.objects.values_list('divcontext', flat=True) #Get the divcontext values for each item in the results to align color with boxes
