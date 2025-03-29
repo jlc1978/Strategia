@@ -57,17 +57,19 @@
               radar: {
               // shape: 'circle',
               radius: ["0%", "70%"], //Size of plot
+              
               indicator: [
               { name: area_name[0], max: max, color:'black',
               axisLabel: {
                 color: 'black',
                 show: true,
-                interval: 0,
+                interval: 4,
                 showMinLabel: false,
               },},
               ...Array.from({length: n - 1}, // create data set based on number of data points
               (_, i) => ({name: area_name[i + 1], max: max, color: 'black'}))
-               ]
+               ],
+               splitNumber: 4, // Number of gradients in radar plot
             },
             series: [
               {

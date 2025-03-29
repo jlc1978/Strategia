@@ -66,6 +66,7 @@ def results(request,id):
     if request.method == "POST":                         
         keys_values=list(request.POST.keys()) #extract keys = questions are keys
         answers_values=list(request.POST.values())
+        max=4 # number of choices
 
         #results_comments = answers_values.pop() #  Get comments from list need to uncomment when commnets added back to template
         keys_values.pop(0)# remove token so not part of list of values
@@ -92,7 +93,7 @@ def results(request,id):
         user = Final_Result_Question.objects.filter(user_id=user_id,survey = survey) #get QuerySet for user to see if data already exists
         if not user: # if no data exists in Final_Results create data entry
             for j in range(len(keys_values)):#fill in answers to SQL table
-                Final_Result_Question.objects.create(area = area_text[j],question = questions_text[j],scores = answers_values_int[j], max_scores = 5, area_id = questionareas_area_id[j], user_id=user_id, company=company, respondent=user_name, survey=survey,survey_name=survey_text)
+                Final_Result_Question.objects.create(area = area_text[j],question = questions_text[j],scores = answers_values_int[j], max_scores = max, area_id = questionareas_area_id[j], user_id=user_id, company=company, respondent=user_name, survey=survey,survey_name=survey_text)
  
         else: #If data exists update to latets answers from user
             '''            print("Loading Final answers)")
@@ -309,7 +310,6 @@ def radarplot(area_and_overall_colors,survey,user_id,company,project): #Create f
     else: #If data exists update to latets answers from user
        for x in range(n):
             data=Final_Result.objects.filter(user_id = user_id,survey=survey,area = area_name[x]).update(scores = area_scores[x],area_color = area_colors[x], overall_color = overall_color)
-
     return area_name, area_scores, max_scores
 
 @login_required(login_url='login')
